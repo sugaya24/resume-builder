@@ -17,7 +17,7 @@ function Cta() {
                   Create your beautiful resume easily.
                 </span>
                 <div className="text-center md:text-left">
-                  <a href="#">
+                  <a href="/edit">
                     <Button text="Build a RESUME" />
                   </a>
                 </div>
