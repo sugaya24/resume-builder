@@ -1,26 +1,41 @@
 import React from "react";
 
 export type InputProps = {
+  value: string;
   labelText: string;
   labelFor: string;
   type: string;
   placeholder: string;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
 };
 
-function Input({ labelText, labelFor, type, placeholder }: InputProps) {
+function Input({
+  value,
+  labelText,
+  labelFor,
+  type,
+  placeholder,
+  onChange,
+}: InputProps) {
   return (
     <>
-      <label
-        className="mb-2 block text-sm font-bold text-gray-700"
-        htmlFor={labelFor}
-      >
-        {labelText}
-      </label>
-      <input
-        className="focus:shadow-outline w-full appearance-none rounded-lg border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
-        type={type}
-        placeholder={placeholder}
-      />
+      <div>
+        <label
+          className="mb-2 block text-sm font-bold text-gray-700"
+          htmlFor={labelFor}
+        >
+          {labelText}
+        </label>
+        <input
+          className="focus:shadow-outline w-full appearance-none rounded-lg border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
+          value={value}
+          type={type}
+          placeholder={placeholder}
+          onChange={onChange}
+        />
+      </div>
     </>
   );
 }
