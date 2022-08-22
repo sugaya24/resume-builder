@@ -23,6 +23,7 @@
     ]
   },
   "dependencies": {
+    "@react-pdf/renderer": "^2.3.0",
     "date-fns": "^2.29.2",
     "next": "12.2.5",
     "react": "18.2.0",
