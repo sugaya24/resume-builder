@@ -1,32 +1,32 @@
 import { format } from "date-fns";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 
+import { TProfileState } from "../../../components/layouts/EditLayout";
 import Input from "../../../components/ui/Input";
 import { DateYMString } from "../types";
 
-function PersonalDetail() {
-  const [jobTitle, setJobTitle] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-
-  const handleChange =
-    (setValue: any) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setValue(e.target.value);
-    };
-
+type PersonalDetailProps = {
+  profileState: TProfileState;
+  setProfileState: Dispatch<SetStateAction<TProfileState>>;
+};
+function PersonalDetail({
+  profileState,
+  setProfileState,
+}: PersonalDetailProps) {
   return (
-    <form className="w-full">
-      <div className="mb-8 flex flex-row gap-8">
+    <form className="flex w-full flex-col gap-8">
+      <div className="flex flex-row gap-8">
         <div className="w-1/2">
           <Input
-            value={jobTitle}
+            value={profileState.jobTitle}
             labelText="Job Title"
             labelFor="job-title"
             type="text"
             placeholder="Job Title"
-            onChange={(e) => handleChange(setJobTitle)(e)}
+            onChange={(e) =>
+              setProfileState({ ...profileState, jobTitle: e.target.value })
+            }
           />
         </div>
         <div className="w-1/2"></div>
@@ -34,37 +34,45 @@ function PersonalDetail() {
       <div className="flex flex-row gap-8">
         <div className="w-1/2">
           <Input
-            value={firstName}
+            value={profileState.firstName}
             labelText="First Name"
             labelFor="first-name"
             type="text"
             placeholder="First Name"
-            onChange={(e) => handleChange(setFirstName)(e)}
+            onChange={(e) =>
+              setProfileState({ ...profileState, firstName: e.target.value })
+            }
           />
         </div>
         <div className="w-1/2">
           <Input
-            value={lastName}
+            value={profileState.lastName}
             labelText="Last Name"
             labelFor="last-name"
             type="text"
             placeholder="Last Name"
-            onChange={(e) => handleChange(setLastName)(e)}
+            onChange={(e) =>
+              setProfileState({ ...profileState, lastName: e.target.value })
+            }
           />
         </div>
       </div>
-    </form>
-  );
-}
-
-function PersonalSummary() {
-  return (
-    <form className="w-full">
-      <textarea
-        name="personal summary"
-        className="w-full rounded-lg border p-4 shadow"
-        rows={10}
-      ></textarea>
+      <div>
+        <label
+          className="mb-2 block text-sm font-bold text-gray-700"
+          htmlFor="summary"
+        >
+          Summary
+        </label>
+        <textarea
+          name="personal summary"
+          className="w-full rounded-lg border p-4 shadow"
+          rows={10}
+          onChange={(e) =>
+            setProfileState({ ...profileState, summary: e.target.value })
+          }
+        />
+      </div>
     </form>
   );
 }
@@ -360,7 +368,11 @@ function EducationList({
   );
 }
 
-function Editor() {
+type EditorProps = {
+  profileState: TProfileState;
+  setProfileState: Dispatch<SetStateAction<TProfileState>>;
+};
+function Editor({ profileState, setProfileState }: EditorProps) {
   const [works, setWorks] = useState<WorkHistory[]>([]);
   const [educationList, setEducationList] = useState<TEducation[]>([]);
 
@@ -368,11 +380,10 @@ function Editor() {
     <div className="h-full grow-0 overflow-y-scroll bg-slate-50">
       <div className="mb-8 p-4">
         <h1 className="mb-8 text-3xl font-bold">Personal Detail</h1>
-        <PersonalDetail />
-      </div>
-      <div className="p-4">
-        <h1 className="mb-8 text-3xl font-bold">Personal Summary</h1>
-        <PersonalSummary />
+        <PersonalDetail
+          profileState={profileState}
+          setProfileState={setProfileState}
+        />
       </div>
       <div className="p-4">
         <h1 className="mb-8 text-3xl font-bold">Work History</h1>

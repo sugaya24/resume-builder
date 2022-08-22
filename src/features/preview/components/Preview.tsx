@@ -8,6 +8,8 @@ import {
 } from "@react-pdf/renderer";
 import React, { useEffect, useState } from "react";
 
+import { TProfileState } from "../../../components/layouts/EditLayout";
+
 // Create styles
 const styles = StyleSheet.create({
   page: {
@@ -47,31 +49,34 @@ const styles = StyleSheet.create({
   },
 });
 
-function MyDocument() {
+type MyDocumentProps = {
+  profileState: TProfileState;
+};
+function MyDocument({ profileState }: MyDocumentProps) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.name}>Yuki Sugaya</Text>
-          <Text style={styles.jobtitle}>Frontend Developer</Text>
+          <Text style={styles.name}>
+            {`${profileState.firstName || ""} ${profileState.lastName || ""}`}
+          </Text>
+          <Text style={styles.jobtitle}>{profileState.jobTitle}</Text>
         </View>
         <View style={styles.personal}>
           <View style={styles.heading}>
             <Text>Profile</Text>
           </View>
-          <Text style={styles.jobDescription}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum
-            eaque earum sunt ut ullam cupiditate saepe tenetur nemo adipisci.
-            Illo obcaecati consequuntur, omnis hic quae saepe qui vero
-            aspernatur facilis.
-          </Text>
+          <Text style={styles.jobDescription}>{profileState.summary}</Text>
         </View>
       </Page>
     </Document>
   );
 }
 
-function Preview() {
+type PreviewProps = {
+  profileState: TProfileState;
+};
+function Preview({ profileState }: PreviewProps) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -86,7 +91,7 @@ function Preview() {
         <div className="h-full w-full grow bg-white shadow">
           {isClient && (
             <PDFViewer width={"100%"} height={"100%"} showToolbar={true}>
-              <MyDocument />
+              <MyDocument profileState={profileState} />
             </PDFViewer>
           )}
         </div>
