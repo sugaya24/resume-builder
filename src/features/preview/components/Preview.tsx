@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 
 import {
+  TEducation,
   TProfileState,
   TWorkHistory,
 } from "../../../components/layouts/EditLayout";
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
   personal: {
     display: "flex",
     flexDirection: "row",
-    marginBottom: 24,
+    marginBottom: 32,
   },
   jobDescription: {
     width: "70%",
@@ -66,20 +67,45 @@ const styles = StyleSheet.create({
   },
   employmentHistoryMain: {
     width: "70%",
-    fontSize: 12,
+    fontSize: 10,
   },
   employmentHistoryMainHeading: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
     marginBottom: 8,
+  },
+  education: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    marginBottom: 8,
+  },
+  educationRange: {
+    marginTop: 2,
+    marginRight: "auto",
+    fontSize: 10,
+  },
+  educationMain: {
+    width: "70%",
+    fontSize: 10,
+  },
+  educationMainHeading: {
+    fontSize: 12,
+    fontWeight: "bold",
+    marginBottom: 4,
   },
 });
 
 type MyDocumentProps = {
   profileState: TProfileState;
   workList: TWorkHistory[];
+  educationList: TEducation[];
 };
-function MyDocument({ profileState, workList }: MyDocumentProps) {
+function MyDocument({
+  profileState,
+  workList,
+  educationList,
+}: MyDocumentProps) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -95,32 +121,78 @@ function MyDocument({ profileState, workList }: MyDocumentProps) {
           </View>
           <Text style={styles.jobDescription}>{profileState.summary}</Text>
         </View>
-        <Text style={{ ...styles.heading, marginBottom: 16 }}>
-          Employment History
-        </Text>
-        {workList &&
-          workList.map((work) => (
-            <View style={styles.employmentHistory} key={work.jobTitle}>
-              <View style={styles.employmentHistoryRange}>
-                <Text>
-                  {format(
-                    new Date(work.startDate as DateYMString),
-                    "MMMM yyyy",
-                  )}{" "}
-                  –{" "}
-                  {format(new Date(work.endDate as DateYMString), "MMMM yyyy")}
-                </Text>
+        <View style={{ marginBottom: 24 }}>
+          <Text style={{ ...styles.heading, marginBottom: 16 }}>
+            Employment History
+          </Text>
+          {workList &&
+            workList.map((work) => (
+              <View style={styles.employmentHistory} key={work.jobTitle}>
+                <View style={styles.employmentHistoryRange}>
+                  <Text>
+                    {format(
+                      new Date(work.startDate as DateYMString),
+                      "MMMM yyyy",
+                    )}{" "}
+                    –{" "}
+                    {format(
+                      new Date(work.endDate as DateYMString),
+                      "MMMM yyyy",
+                    )}
+                  </Text>
+                </View>
+                <View style={styles.employmentHistoryMain}>
+                  <Text style={styles.employmentHistoryMainHeading}>
+                    {`${work.jobTitle || "(jot title)"}${
+                      work.employer && ` at ${work.employer}`
+                    }`}
+                  </Text>
+                  <Text style={{ color: "#444" }}>{work.description}</Text>
+                </View>
               </View>
-              <View style={styles.employmentHistoryMain}>
-                <Text style={styles.employmentHistoryMainHeading}>
-                  {`${work.jobTitle || "(jot title)"}${
-                    work.employer && ` at ${work.employer}`
-                  }`}
-                </Text>
-                <Text>{work.description}</Text>
+            ))}
+        </View>
+        <View>
+          <Text style={{ ...styles.heading, marginBottom: 16 }}>Education</Text>
+          {educationList &&
+            educationList.map((education) => (
+              <View key={education.school} style={styles.education}>
+                <View style={styles.educationRange}>
+                  <Text>
+                    {format(
+                      new Date(education.startDate as DateYMString),
+                      "MMMM yyyy",
+                    )}{" "}
+                    –{" "}
+                    {format(
+                      new Date(education.endDate as DateYMString),
+                      "MMMM yyyy",
+                    )}
+                  </Text>
+                </View>
+                <View style={styles.educationMain}>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      marginRight: "auto",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    <Text style={styles.educationMainHeading}>
+                      {`${education.school || "(school name)"}`}
+                    </Text>
+                    <Text style={{}}>{education.city || ""}</Text>
+                  </View>
+                  <Text style={{ marginBottom: 8, color: "#444" }}>
+                    {education.degree}
+                  </Text>
+                  <Text style={{ color: "#444" }}>{education.description}</Text>
+                </View>
               </View>
-            </View>
-          ))}
+            ))}
+        </View>
       </Page>
     </Document>
   );
@@ -129,8 +201,9 @@ function MyDocument({ profileState, workList }: MyDocumentProps) {
 type PreviewProps = {
   profileState: TProfileState;
   workList: TWorkHistory[];
+  educationList: TEducation[];
 };
-function Preview({ profileState, workList }: PreviewProps) {
+function Preview({ profileState, workList, educationList }: PreviewProps) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -145,7 +218,11 @@ function Preview({ profileState, workList }: PreviewProps) {
         <div className="h-full w-full grow bg-white shadow">
           {isClient && (
             <PDFViewer width={"100%"} height={"100%"} showToolbar={true}>
-              <MyDocument profileState={profileState} workList={workList} />
+              <MyDocument
+                profileState={profileState}
+                workList={workList}
+                educationList={educationList}
+              />
             </PDFViewer>
           )}
         </div>

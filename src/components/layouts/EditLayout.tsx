@@ -18,11 +18,20 @@ export type TWorkHistory = {
   city: string;
   description: string;
 };
+export type TEducation = {
+  school: string;
+  degree: string;
+  startDate: DateYMString | null;
+  endDate: DateYMString | null;
+  city?: string;
+  description?: string;
+};
 export default function EditPage() {
   const [profileState, setProfileState] = useState<TProfileState>(
     {} as TProfileState,
   );
   const [workList, setWorkList] = useState<TWorkHistory[]>([]);
+  const [educationList, setEducationList] = useState<TEducation[]>([]);
 
   return (
     <>
@@ -36,10 +45,16 @@ export default function EditPage() {
                   setProfileState={setProfileState}
                   workList={workList}
                   setWorkList={setWorkList}
+                  educationList={educationList}
+                  setEducationList={setEducationList}
                 />
               </div>
               <div className="w-1/2">
-                <Preview profileState={profileState} workList={workList} />
+                <Preview
+                  profileState={profileState}
+                  workList={workList}
+                  educationList={educationList}
+                />
               </div>
             </div>
           </div>

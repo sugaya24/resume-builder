@@ -3,6 +3,7 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 
 import {
+  TEducation,
   TProfileState,
   TWorkHistory,
 } from "../../../components/layouts/EditLayout";
@@ -271,19 +272,25 @@ function WorkHistory({
   );
 }
 
-function Education({ education }: { education: TEducation }) {
+type EducationProps = {
+  id: number;
+  educationList: TEducation[];
+  setEducationList: Dispatch<SetStateAction<TEducation[]>>;
+};
+function Education({ id, educationList, setEducationList }: EducationProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [school, setSchool] = useState(education.school);
-  const [degree, setDegree] = useState(education.degree);
-  const [city, setCity] = useState(education.city);
-  const [startDate, setStartDate] = useState(education.startDate);
-  const [endDate, setEndDate] = useState(education.endDate);
-  const [description, setDescription] = useState(education.description);
 
-  const handleChange =
-    (setValue: React.Dispatch<React.SetStateAction<any>>) =>
+  const handleOnChange =
+    (key: keyof TEducation) =>
+    (id: number) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setValue(e.target.value);
+      const updatedList = educationList.map((education, i) => {
+        if (id === i) {
+          education[key] = e.target.value as string & DateYMString;
+        }
+        return education;
+      });
+      setEducationList(updatedList);
     };
 
   return (
@@ -291,11 +298,17 @@ function Education({ education }: { education: TEducation }) {
       <div className="mb-4 rounded-lg border bg-white p-4">
         <div className="flex justify-between">
           <div>
-            <h2>{school || "(School)"}</h2>
-            {startDate && endDate && (
+            <h2>{educationList[id].school || "(School)"}</h2>
+            {educationList[id].startDate && educationList[id].endDate && (
               <span className="font-light text-gray-400">
-                {`${format(new Date(startDate), "MMM yyyy")} - 
-                ${format(new Date(endDate), "MMM yyyy")}`}
+                {`${format(
+                  new Date(educationList[id].startDate as DateYMString),
+                  "MMM yyyy",
+                )} - 
+                ${format(
+                  new Date(educationList[id].endDate as DateYMString),
+                  "MMM yyyy",
+                )}`}
               </span>
             )}
           </div>
@@ -313,24 +326,24 @@ function Education({ education }: { education: TEducation }) {
               labelFor="school"
               type="text"
               placeholder="School"
-              value={school}
-              onChange={(e) => handleChange(setSchool)(e)}
+              value={educationList[id].school}
+              onChange={(e) => handleOnChange("school")(id)(e)}
             />
             <Input
               labelText="Degree"
               labelFor="degree"
               type="text"
               placeholder="Degree"
-              value={degree}
-              onChange={(e) => handleChange(setDegree)(e)}
+              value={educationList[id].degree}
+              onChange={(e) => handleOnChange("degree")(id)(e)}
             />
             <Input
               labelText="City"
               labelFor="city"
               type="text"
               placeholder="City"
-              value={city || ""}
-              onChange={(e) => handleChange(setCity)(e)}
+              value={educationList[id].city || ""}
+              onChange={(e) => handleOnChange("city")(id)(e)}
             />
             <div className="flex w-full flex-row gap-8">
               <div className="w-1/2">
@@ -339,10 +352,15 @@ function Education({ education }: { education: TEducation }) {
                   placeholder="Date Picker"
                   type="month"
                   value={
-                    startDate ? format(new Date(startDate), "yyyy-MM") : ""
+                    educationList[id].startDate
+                      ? format(
+                          new Date(educationList[id].startDate as DateYMString),
+                          "yyyy-MM",
+                        )
+                      : ""
                   }
                   labelFor="start date"
-                  onChange={(e) => setStartDate(e.target.value as DateYMString)}
+                  onChange={(e) => handleOnChange("startDate")(id)(e)}
                 />
               </div>
               <div className="w-1/2">
@@ -350,9 +368,16 @@ function Education({ education }: { education: TEducation }) {
                   labelText="End Date"
                   placeholder="Date Picker"
                   type="month"
-                  value={endDate ? format(new Date(endDate), "yyyy-MM") : ""}
+                  value={
+                    educationList[id].endDate
+                      ? format(
+                          new Date(educationList[id].endDate as DateYMString),
+                          "yyyy-MM",
+                        )
+                      : ""
+                  }
                   labelFor="end date"
-                  onChange={(e) => setEndDate(e.target.value as DateYMString)}
+                  onChange={(e) => handleOnChange("endDate")(id)(e)}
                 />
               </div>
             </div>
@@ -367,9 +392,10 @@ function Education({ education }: { education: TEducation }) {
                 name="work description"
                 className="w-full rounded-lg border p-4 shadow"
                 rows={10}
-                onChange={(e) => setDescription(e.target.value)}
+                value={educationList[id].description}
+                onChange={(e) => handleOnChange("description")(id)(e)}
               >
-                {description}
+                {educationList[id].description}
               </textarea>
             </div>
           </div>
@@ -379,14 +405,6 @@ function Education({ education }: { education: TEducation }) {
   );
 }
 
-type TEducation = {
-  school: string;
-  degree: string;
-  startDate: DateYMString | null;
-  endDate: DateYMString | null;
-  city?: string;
-  description?: string;
-};
 function EducationList({
   educationList,
   setEducationList,
@@ -396,8 +414,13 @@ function EducationList({
 }) {
   return (
     <div>
-      {educationList.map((education) => (
-        <Education key={education.school} education={education} />
+      {educationList.map((_education, id) => (
+        <Education
+          key={id}
+          id={id}
+          educationList={educationList}
+          setEducationList={setEducationList}
+        />
       ))}
       <span
         className="cursor-pointer text-sky-600"
@@ -426,15 +449,17 @@ type EditorProps = {
   setProfileState: Dispatch<SetStateAction<TProfileState>>;
   workList: TWorkHistory[];
   setWorkList: Dispatch<SetStateAction<TWorkHistory[]>>;
+  educationList: TEducation[];
+  setEducationList: Dispatch<SetStateAction<TEducation[]>>;
 };
 function Editor({
   profileState,
   setProfileState,
   workList,
   setWorkList,
+  educationList,
+  setEducationList,
 }: EditorProps) {
-  const [educationList, setEducationList] = useState<TEducation[]>([]);
-
   return (
     <div className="h-full grow-0 overflow-y-scroll bg-slate-50">
       <div className="mb-8 p-4">
