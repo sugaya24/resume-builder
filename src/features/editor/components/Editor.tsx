@@ -2,7 +2,10 @@ import { format } from "date-fns";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 
-import { TProfileState } from "../../../components/layouts/EditLayout";
+import {
+  TProfileState,
+  TWorkHistory,
+} from "../../../components/layouts/EditLayout";
 import Input from "../../../components/ui/Input";
 import { DateYMString } from "../types";
 
@@ -77,18 +80,16 @@ function PersonalDetail({
   );
 }
 
-function Work({ work }: { work: WorkHistory }) {
+function Work({
+  id,
+  workList,
+  setWorkList,
+}: {
+  id: number;
+  workList: TWorkHistory[];
+  setWorkList: Dispatch<SetStateAction<TWorkHistory[]>>;
+}) {
   const [isEditing, setIsEditing] = useState(false);
-  const [jobTitle, setJobTitle] = useState(work.jobTitle);
-  const [employer, setEmployer] = useState(work.employer);
-  const [startDate, setStartDate] = useState(work.startDate);
-  const [endDate, setEndDate] = useState(work.endDate);
-
-  const handleChange =
-    (setValue: React.Dispatch<React.SetStateAction<string | DateYMString>>) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setValue(e.target.value);
-    };
 
   return (
     <>
@@ -96,13 +97,19 @@ function Work({ work }: { work: WorkHistory }) {
         <div className="flex justify-between">
           <div>
             <h2 className="font-semibold">
-              {jobTitle || "(Job Title)"}
-              {employer && ` at ${employer}`}
+              {workList[id].jobTitle || "(Job Title)"}
+              {workList[id].employer && ` at ${workList[id].employer}`}
             </h2>
-            {startDate && endDate && (
+            {workList[id].startDate && workList[id].endDate && (
               <span className="font-light text-gray-400">
-                {`${format(new Date(startDate), "MMM yyyy")} - 
-                ${format(new Date(endDate), "MMM yyyy")}`}
+                {`${format(
+                  new Date(workList[id].startDate as DateYMString),
+                  "MMM yyyy",
+                )} - 
+                ${format(
+                  new Date(workList[id].endDate as DateYMString),
+                  "MMM yyyy",
+                )}`}
               </span>
             )}
           </div>
@@ -121,16 +128,32 @@ function Work({ work }: { work: WorkHistory }) {
               labelFor="job title"
               type="text"
               placeholder="Job Title"
-              value={jobTitle}
-              onChange={(e) => handleChange(setJobTitle)(e)}
+              value={workList[id].jobTitle}
+              onChange={(e) => {
+                const updateList = workList.map((work, i) => {
+                  if (id === i) {
+                    work.jobTitle = e.target.value;
+                  }
+                  return work;
+                });
+                setWorkList(updateList);
+              }}
             />
             <Input
               labelText="Employer"
               labelFor="employer"
               type="text"
               placeholder="Employer"
-              value={employer}
-              onChange={(e) => handleChange(setEmployer)(e)}
+              value={workList[id].employer}
+              onChange={(e) => {
+                const updateList = workList.map((work, i) => {
+                  if (id === i) {
+                    work.employer = e.target.value;
+                  }
+                  return work;
+                });
+                setWorkList(updateList);
+              }}
             />
             <div className="flex w-full flex-row gap-8">
               <div className="w-1/2">
@@ -139,10 +162,23 @@ function Work({ work }: { work: WorkHistory }) {
                   placeholder="Date Picker"
                   type="month"
                   value={
-                    startDate ? format(new Date(startDate), "yyyy-MM") : ""
+                    workList[id].startDate
+                      ? format(
+                          new Date(workList[id].startDate as DateYMString),
+                          "yyyy-MM",
+                        )
+                      : ""
                   }
                   labelFor=""
-                  onChange={(e) => setStartDate(e.target.value as DateYMString)}
+                  onChange={(e) => {
+                    const updateList = workList.map((work, i) => {
+                      if (id === i) {
+                        work.startDate = e.target.value as DateYMString;
+                      }
+                      return work;
+                    });
+                    setWorkList(updateList);
+                  }}
                 />
               </div>
               <div className="w-1/2">
@@ -150,9 +186,24 @@ function Work({ work }: { work: WorkHistory }) {
                   labelText="End Date"
                   placeholder="Date Picker"
                   type="month"
-                  value={endDate ? format(new Date(endDate), "yyyy-MM") : ""}
+                  value={
+                    workList[id].endDate
+                      ? format(
+                          new Date(workList[id].endDate as DateYMString),
+                          "yyyy-MM",
+                        )
+                      : ""
+                  }
                   labelFor=""
-                  onChange={(e) => setEndDate(e.target.value as DateYMString)}
+                  onChange={(e) => {
+                    const updateList = workList.map((work, i) => {
+                      if (id === i) {
+                        work.endDate = e.target.value as DateYMString;
+                      }
+                      return work;
+                    });
+                    setWorkList(updateList);
+                  }}
                 />
               </div>
             </div>
@@ -167,7 +218,17 @@ function Work({ work }: { work: WorkHistory }) {
                 name="work description"
                 className="w-full rounded-lg border p-4 shadow"
                 rows={10}
-              ></textarea>
+                value={workList[id].description}
+                onChange={(e) => {
+                  const updateList = workList.map((work, i) => {
+                    if (id === i) {
+                      work.description = e.target.value;
+                    }
+                    return work;
+                  });
+                  setWorkList(updateList);
+                }}
+              />
             </div>
           </div>
         )}
@@ -176,30 +237,22 @@ function Work({ work }: { work: WorkHistory }) {
   );
 }
 
-type WorkHistory = {
-  jobTitle: string;
-  employer: string;
-  startDate: DateYMString | null;
-  endDate: DateYMString | null;
-  city: string;
-  description: string;
-};
 function WorkHistory({
-  works,
-  setWorks,
+  workList,
+  setWorkList,
 }: {
-  works: WorkHistory[];
-  setWorks: React.Dispatch<React.SetStateAction<WorkHistory[]>>;
+  workList: TWorkHistory[];
+  setWorkList: Dispatch<SetStateAction<TWorkHistory[]>>;
 }) {
   return (
     <div>
-      {works.map((work) => (
-        <Work key={work.jobTitle} work={work} />
+      {workList.map((_work, id) => (
+        <Work key={id} id={id} workList={workList} setWorkList={setWorkList} />
       ))}
       <span
         className="cursor-pointer text-sky-600"
         onClick={() =>
-          setWorks((works) => [
+          setWorkList((works) => [
             ...works,
             {
               jobTitle: "",
@@ -371,9 +424,15 @@ function EducationList({
 type EditorProps = {
   profileState: TProfileState;
   setProfileState: Dispatch<SetStateAction<TProfileState>>;
+  workList: TWorkHistory[];
+  setWorkList: Dispatch<SetStateAction<TWorkHistory[]>>;
 };
-function Editor({ profileState, setProfileState }: EditorProps) {
-  const [works, setWorks] = useState<WorkHistory[]>([]);
+function Editor({
+  profileState,
+  setProfileState,
+  workList,
+  setWorkList,
+}: EditorProps) {
   const [educationList, setEducationList] = useState<TEducation[]>([]);
 
   return (
@@ -387,7 +446,7 @@ function Editor({ profileState, setProfileState }: EditorProps) {
       </div>
       <div className="p-4">
         <h1 className="mb-8 text-3xl font-bold">Work History</h1>
-        <WorkHistory works={works} setWorks={setWorks} />
+        <WorkHistory workList={workList} setWorkList={setWorkList} />
       </div>
       <div className="p-4">
         <h1 className="mb-8 text-3xl font-bold">Education</h1>

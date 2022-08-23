@@ -6,9 +6,14 @@ import {
   Text,
   View,
 } from "@react-pdf/renderer";
+import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 
-import { TProfileState } from "../../../components/layouts/EditLayout";
+import {
+  TProfileState,
+  TWorkHistory,
+} from "../../../components/layouts/EditLayout";
+import { DateYMString } from "../../editor/types";
 
 // Create styles
 const styles = StyleSheet.create({
@@ -26,7 +31,7 @@ const styles = StyleSheet.create({
   header: {
     paddingVertical: 16,
     paddingHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 24,
     borderRadius: 5,
     color: "#fff",
     backgroundColor: "#333",
@@ -36,23 +41,45 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 4,
   },
-  jobtitle: {
+  jobTitle: {
     fontSize: 16,
   },
   personal: {
     display: "flex",
     flexDirection: "row",
+    marginBottom: 24,
   },
   jobDescription: {
     width: "70%",
     fontSize: 12,
   },
+  employmentHistory: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    marginBottom: 8,
+  },
+  employmentHistoryRange: {
+    marginTop: 2,
+    marginRight: "auto",
+    fontSize: 10,
+  },
+  employmentHistoryMain: {
+    width: "70%",
+    fontSize: 12,
+  },
+  employmentHistoryMainHeading: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
 });
 
 type MyDocumentProps = {
   profileState: TProfileState;
+  workList: TWorkHistory[];
 };
-function MyDocument({ profileState }: MyDocumentProps) {
+function MyDocument({ profileState, workList }: MyDocumentProps) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -60,7 +87,7 @@ function MyDocument({ profileState }: MyDocumentProps) {
           <Text style={styles.name}>
             {`${profileState.firstName || ""} ${profileState.lastName || ""}`}
           </Text>
-          <Text style={styles.jobtitle}>{profileState.jobTitle}</Text>
+          <Text style={styles.jobTitle}>{profileState.jobTitle}</Text>
         </View>
         <View style={styles.personal}>
           <View style={styles.heading}>
@@ -68,6 +95,32 @@ function MyDocument({ profileState }: MyDocumentProps) {
           </View>
           <Text style={styles.jobDescription}>{profileState.summary}</Text>
         </View>
+        <Text style={{ ...styles.heading, marginBottom: 16 }}>
+          Employment History
+        </Text>
+        {workList &&
+          workList.map((work) => (
+            <View style={styles.employmentHistory} key={work.jobTitle}>
+              <View style={styles.employmentHistoryRange}>
+                <Text>
+                  {format(
+                    new Date(work.startDate as DateYMString),
+                    "MMMM yyyy",
+                  )}{" "}
+                  –{" "}
+                  {format(new Date(work.endDate as DateYMString), "MMMM yyyy")}
+                </Text>
+              </View>
+              <View style={styles.employmentHistoryMain}>
+                <Text style={styles.employmentHistoryMainHeading}>
+                  {`${work.jobTitle || "(jot title)"}${
+                    work.employer && ` at ${work.employer}`
+                  }`}
+                </Text>
+                <Text>{work.description}</Text>
+              </View>
+            </View>
+          ))}
       </Page>
     </Document>
   );
@@ -75,8 +128,9 @@ function MyDocument({ profileState }: MyDocumentProps) {
 
 type PreviewProps = {
   profileState: TProfileState;
+  workList: TWorkHistory[];
 };
-function Preview({ profileState }: PreviewProps) {
+function Preview({ profileState, workList }: PreviewProps) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -91,7 +145,7 @@ function Preview({ profileState }: PreviewProps) {
         <div className="h-full w-full grow bg-white shadow">
           {isClient && (
             <PDFViewer width={"100%"} height={"100%"} showToolbar={true}>
-              <MyDocument profileState={profileState} />
+              <MyDocument profileState={profileState} workList={workList} />
             </PDFViewer>
           )}
         </div>
