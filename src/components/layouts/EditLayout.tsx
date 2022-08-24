@@ -9,6 +9,12 @@ export type TProfileState = {
   firstName: string;
   lastName: string;
   summary: string;
+  address?: string;
+  phoneNumber?: string;
+  email?: string;
+  github?: string;
+  linkedin?: string;
+  website?: string;
 };
 export type TWorkHistory = {
   jobTitle: string;
@@ -27,9 +33,12 @@ export type TEducation = {
   description?: string;
 };
 export default function EditPage() {
-  const [profileState, setProfileState] = useState<TProfileState>(
-    {} as TProfileState,
-  );
+  const [profileState, setProfileState] = useState<TProfileState>({
+    jobTitle: "",
+    firstName: "",
+    lastName: "",
+    summary: "",
+  });
   const [workList, setWorkList] = useState<TWorkHistory[]>([]);
   const [educationList, setEducationList] = useState<TEducation[]>([]);
 

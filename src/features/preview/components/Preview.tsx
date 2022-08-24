@@ -15,6 +15,12 @@ import {
   TWorkHistory,
 } from "../../../components/layouts/EditLayout";
 import { DateYMString } from "../../editor/types";
+import EmailIcon from "./EmailIcon";
+import GitHubIcon from "./GitHubIcon";
+import LinkIcon from "./LinkIcon";
+import LinkedinIcon from "./LinkeinIcon";
+import LocationMarkerIcon from "./LocationMarkerIcon";
+import PhoneIcon from "./PhoneIcon";
 
 // Create styles
 const styles = StyleSheet.create({
@@ -44,6 +50,18 @@ const styles = StyleSheet.create({
   },
   jobTitle: {
     fontSize: 16,
+    marginBottom: 16,
+  },
+  profileItem: {
+    width: "33.3%",
+    marginBottom: 4,
+    display: "flex",
+    flexDirection: "row",
+  },
+  profileItemText: {
+    color: "#ddd",
+    fontSize: 10,
+    marginLeft: 4,
   },
   personal: {
     display: "flex",
@@ -114,6 +132,56 @@ function MyDocument({
             {`${profileState.firstName || ""} ${profileState.lastName || ""}`}
           </Text>
           <Text style={styles.jobTitle}>{profileState.jobTitle}</Text>
+          <View
+            style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
+          >
+            {profileState.email && (
+              <View style={styles.profileItem}>
+                <EmailIcon />
+                <Text style={styles.profileItemText}>{profileState.email}</Text>
+              </View>
+            )}
+            {profileState.phoneNumber && (
+              <View style={styles.profileItem}>
+                <PhoneIcon />
+                <Text style={styles.profileItemText}>
+                  {profileState.phoneNumber}
+                </Text>
+              </View>
+            )}
+            {profileState.address && (
+              <View style={styles.profileItem}>
+                <LocationMarkerIcon />
+                <Text style={styles.profileItemText}>
+                  {profileState.address}
+                </Text>
+              </View>
+            )}
+            {profileState.github && (
+              <View style={styles.profileItem}>
+                <GitHubIcon />
+                <Text style={styles.profileItemText}>
+                  {profileState.github}
+                </Text>
+              </View>
+            )}
+            {profileState.linkedin && (
+              <View style={styles.profileItem}>
+                <LinkedinIcon />
+                <Text style={styles.profileItemText}>
+                  {profileState.linkedin}
+                </Text>
+              </View>
+            )}
+            {profileState.website && (
+              <View style={styles.profileItem}>
+                <LinkIcon />
+                <Text style={styles.profileItemText}>
+                  {profileState.website}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
         <View style={styles.personal}>
           <View style={styles.heading}>

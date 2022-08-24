@@ -61,6 +61,84 @@ function PersonalDetail({
           />
         </div>
       </div>
+      <div className="flex flex-row gap-8">
+        <div className="w-1/2">
+          <Input
+            value={profileState.phoneNumber || ""}
+            labelText="Phone"
+            labelFor="phone-number"
+            type="text"
+            placeholder="Phone Number"
+            onChange={(e) =>
+              setProfileState({ ...profileState, phoneNumber: e.target.value })
+            }
+          />
+        </div>
+        <div className="w-1/2">
+          <Input
+            value={profileState.email || ""}
+            labelText="Email"
+            labelFor="email"
+            type="text"
+            placeholder="Email"
+            onChange={(e) =>
+              setProfileState({ ...profileState, email: e.target.value })
+            }
+          />
+        </div>
+      </div>
+      <div className="flex flex-row gap-8">
+        <div className="w-1/2">
+          <Input
+            value={profileState.address || ""}
+            labelText="Address"
+            labelFor="address"
+            type="text"
+            placeholder="Address"
+            onChange={(e) =>
+              setProfileState({ ...profileState, address: e.target.value })
+            }
+          />
+        </div>
+        <div className="w-1/2">
+          <Input
+            value={profileState.github || ""}
+            labelText="GitHub"
+            labelFor="github"
+            type="text"
+            placeholder="GitHub"
+            onChange={(e) =>
+              setProfileState({ ...profileState, github: e.target.value })
+            }
+          />
+        </div>
+      </div>
+      <div className="flex flex-row gap-8">
+        <div className="w-1/2">
+          <Input
+            value={profileState.linkedin || ""}
+            labelText="LinkedIn"
+            labelFor="linkedin"
+            type="text"
+            placeholder="LinkedIn"
+            onChange={(e) =>
+              setProfileState({ ...profileState, linkedin: e.target.value })
+            }
+          />
+        </div>
+        <div className="w-1/2">
+          <Input
+            value={profileState.website || ""}
+            labelText="Website"
+            labelFor="website"
+            type="text"
+            placeholder="Website"
+            onChange={(e) =>
+              setProfileState({ ...profileState, website: e.target.value })
+            }
+          />
+        </div>
+      </div>
       <div>
         <label
           className="mb-2 block text-sm font-bold text-gray-700"
