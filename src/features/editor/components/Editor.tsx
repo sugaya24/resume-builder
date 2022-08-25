@@ -1,12 +1,15 @@
 import { format } from "date-fns";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
+import { RiCloseCircleLine } from "react-icons/ri";
 
 import {
   TEducation,
   TProfileState,
+  TSkill,
   TWorkHistory,
 } from "../../../components/layouts/EditLayout";
+import Button from "../../../components/ui/Button";
 import Input from "../../../components/ui/Input";
 import { DateYMString } from "../types";
 
@@ -159,6 +162,169 @@ function PersonalDetail({
   );
 }
 
+type SkillProps = {
+  id: number;
+  skills: TSkill[];
+  setSkills: Dispatch<SetStateAction<TSkill[]>>;
+};
+function Skill({ id, skills, setSkills }: SkillProps) {
+  const [isEditing, setIsEditing] = useState(true);
+  const [skill, setSkill] = useState("");
+
+  const handleSubmit = (
+    e:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (skill.length < 1) {
+      return;
+    }
+    const updateSkills = skills.map((s, i) => {
+      if (id === i) {
+        s.name = [...s.name, skill];
+      }
+      return s;
+    });
+    setSkills(updateSkills);
+    setSkill("");
+  };
+
+  return (
+    <>
+      <div className="mb-4 rounded-lg border bg-white p-4">
+        <div className="flex justify-between">
+          {isEditing ? (
+            <input
+              className="mr-4 w-full rounded-lg border py-2 px-4 shadow"
+              type="text"
+              value={skills[id].category}
+              placeholder="Category"
+              onChange={(e) => {
+                const updateSkills = skills.map((s, i) => {
+                  if (id === i) {
+                    s.category = e.target.value;
+                  }
+                  return s;
+                });
+                setSkills(updateSkills);
+              }}
+            />
+          ) : (
+            <h2 className="text-2xl font-semibold">
+              {skills[id].category || "(Category)"}
+            </h2>
+          )}
+          <div
+            className="cursor-pointer"
+            onClick={() => setIsEditing((prev) => !prev)}
+          >
+            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+          </div>
+        </div>
+        {isEditing ? (
+          <div className="mt-4 flex flex-col gap-4">
+            <div className="flex flex-wrap gap-4">
+              {skills[id].name.map((s, i) => (
+                <span
+                  key={s}
+                  className="inline-flex w-fit items-center rounded-full border py-1 pl-4 text-gray-800"
+                >
+                  {s}
+                  <div
+                    className="ml-2 cursor-pointer rounded-full p-2 duration-100 hover:bg-gray-200"
+                    onClick={() => {
+                      const updated = skills.map((s, j) => {
+                        if (id === j) {
+                          s.name = s.name.filter((_item, k) => i !== k);
+                        }
+                        return s;
+                      });
+                      setSkills(updated);
+                    }}
+                  >
+                    <RiCloseCircleLine />
+                  </div>
+                </span>
+              ))}
+            </div>
+            <div className="relative flex w-full items-center justify-end">
+              <input
+                className="mr-4 w-full rounded-lg border py-2 px-4 shadow"
+                value={skill}
+                type="text"
+                placeholder="Skill"
+                onChange={(e) => {
+                  setSkill(e.target.value);
+                }}
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (e.nativeEvent.isComposing || e.key !== "Enter") {
+                    return;
+                  }
+                  handleSubmit(e);
+                }}
+              />
+              <Button
+                text={"Add"}
+                onClick={(
+                  e:
+                    | React.KeyboardEvent<HTMLInputElement>
+                    | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+                ) => handleSubmit(e)}
+                onSubmit={(
+                  e:
+                    | React.KeyboardEvent<HTMLInputElement>
+                    | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+                ) => handleSubmit(e)}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 flex flex-col gap-4">
+            <div className="flex flex-wrap gap-4">
+              {skills[id].name.map((s) => (
+                <span
+                  key={s}
+                  className="inline-flex w-fit rounded-full border py-2 px-4"
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+type SkillListProps = {
+  skills: TSkill[];
+  setSkills: Dispatch<SetStateAction<TSkill[]>>;
+};
+function SkillList({ skills, setSkills }: SkillListProps) {
+  return (
+    <div>
+      {skills.map((_skill, i) => (
+        <Skill key={i} id={i} skills={skills} setSkills={setSkills} />
+      ))}
+      <span
+        className="cursor-pointer text-sky-600"
+        onClick={() => {
+          setSkills([
+            ...skills,
+            {
+              name: [],
+              category: "",
+            },
+          ]);
+        }}
+      >
+        + Add Category
+      </span>
+    </div>
+  );
+}
+
 function Work({
   id,
   workList,
@@ -175,7 +341,7 @@ function Work({
       <div className="mb-4 rounded-lg border bg-white p-4">
         <div className="flex justify-between">
           <div>
-            <h2 className="font-semibold">
+            <h2 className="text-2xl font-semibold">
               {workList[id].jobTitle || "(Job Title)"}
               {workList[id].employer && ` at ${workList[id].employer}`}
             </h2>
@@ -376,7 +542,9 @@ function Education({ id, educationList, setEducationList }: EducationProps) {
       <div className="mb-4 rounded-lg border bg-white p-4">
         <div className="flex justify-between">
           <div>
-            <h2>{educationList[id].school || "(School)"}</h2>
+            <h2 className="text-2xl font-semibold">
+              {educationList[id].school || "(School)"}
+            </h2>
             {educationList[id].startDate && educationList[id].endDate && (
               <span className="font-light text-gray-400">
                 {`${format(
@@ -525,6 +693,8 @@ function EducationList({
 type EditorProps = {
   profileState: TProfileState;
   setProfileState: Dispatch<SetStateAction<TProfileState>>;
+  skills: TSkill[];
+  setSkills: Dispatch<SetStateAction<TSkill[]>>;
   workList: TWorkHistory[];
   setWorkList: Dispatch<SetStateAction<TWorkHistory[]>>;
   educationList: TEducation[];
@@ -533,6 +703,8 @@ type EditorProps = {
 function Editor({
   profileState,
   setProfileState,
+  skills,
+  setSkills,
   workList,
   setWorkList,
   educationList,
@@ -546,6 +718,10 @@ function Editor({
           profileState={profileState}
           setProfileState={setProfileState}
         />
+      </div>
+      <div className="p-4">
+        <h1 className="mb-8 text-3xl font-bold">Skill</h1>
+        <SkillList skills={skills} setSkills={setSkills} />
       </div>
       <div className="p-4">
         <h1 className="mb-8 text-3xl font-bold">Work History</h1>

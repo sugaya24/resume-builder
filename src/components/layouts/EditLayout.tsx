@@ -16,6 +16,10 @@ export type TProfileState = {
   linkedin?: string;
   website?: string;
 };
+export type TSkill = {
+  name: string[];
+  category: string;
+};
 export type TWorkHistory = {
   jobTitle: string;
   employer: string;
@@ -39,6 +43,7 @@ export default function EditPage() {
     lastName: "",
     summary: "",
   });
+  const [skills, setSkills] = useState<TSkill[]>([]);
   const [workList, setWorkList] = useState<TWorkHistory[]>([]);
   const [educationList, setEducationList] = useState<TEducation[]>([]);
 
@@ -52,6 +57,8 @@ export default function EditPage() {
                 <Editor
                   profileState={profileState}
                   setProfileState={setProfileState}
+                  skills={skills}
+                  setSkills={setSkills}
                   workList={workList}
                   setWorkList={setWorkList}
                   educationList={educationList}
