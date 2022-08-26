@@ -12,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import {
   TEducation,
   TProfileState,
+  TSkill,
   TWorkHistory,
 } from "../../../components/layouts/EditLayout";
 import { DateYMString } from "../../editor/types";
@@ -70,7 +71,8 @@ const styles = StyleSheet.create({
   },
   jobDescription: {
     width: "70%",
-    fontSize: 12,
+    fontSize: 10,
+    color: "#444",
   },
   employmentHistory: {
     display: "flex",
@@ -116,11 +118,13 @@ const styles = StyleSheet.create({
 
 type MyDocumentProps = {
   profileState: TProfileState;
+  skills: TSkill[];
   workList: TWorkHistory[];
   educationList: TEducation[];
 };
 function MyDocument({
   profileState,
+  skills,
   workList,
   educationList,
 }: MyDocumentProps) {
@@ -188,6 +192,31 @@ function MyDocument({
             <Text>Profile</Text>
           </View>
           <Text style={styles.jobDescription}>{profileState.summary}</Text>
+        </View>
+        <View
+          style={{ marginBottom: 24, display: "flex", flexDirection: "row" }}
+        >
+          <Text style={styles.heading}>Skills</Text>
+          <View style={{ width: "70%", fontSize: 12 }}>
+            {skills.map((skill) => (
+              <>
+                <Text style={{ marginBottom: 4 }}>{skill.category}</Text>
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    marginBottom: 8,
+                  }}
+                >
+                  {skill.name.map((item, i) => (
+                    <Text key={item} style={{ fontSize: 10, color: "#444" }}>
+                      {i !== skill.name.length - 1 ? `${item}, ` : item}
+                    </Text>
+                  ))}
+                </View>
+              </>
+            ))}
+          </View>
         </View>
         <View style={{ marginBottom: 24 }}>
           <Text style={{ ...styles.heading, marginBottom: 16 }}>
@@ -268,10 +297,16 @@ function MyDocument({
 
 type PreviewProps = {
   profileState: TProfileState;
+  skills: TSkill[];
   workList: TWorkHistory[];
   educationList: TEducation[];
 };
-function Preview({ profileState, workList, educationList }: PreviewProps) {
+function Preview({
+  profileState,
+  skills,
+  workList,
+  educationList,
+}: PreviewProps) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -288,6 +323,7 @@ function Preview({ profileState, workList, educationList }: PreviewProps) {
             <PDFViewer width={"100%"} height={"100%"} showToolbar={true}>
               <MyDocument
                 profileState={profileState}
+                skills={skills}
                 workList={workList}
                 educationList={educationList}
               />

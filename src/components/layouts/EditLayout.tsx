@@ -68,6 +68,7 @@ export default function EditPage() {
               <div className="w-1/2">
                 <Preview
                   profileState={profileState}
+                  skills={skills}
                   workList={workList}
                   educationList={educationList}
                 />
