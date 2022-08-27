@@ -12,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import {
   TEducation,
   TProfileState,
+  TProject,
   TSkill,
   TWorkHistory,
 } from "../../../components/layouts/EditLayout";
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
   personal: {
     display: "flex",
     flexDirection: "row",
-    marginBottom: 32,
+    marginBottom: 24,
   },
   jobDescription: {
     width: "70%",
@@ -119,12 +120,14 @@ const styles = StyleSheet.create({
 type MyDocumentProps = {
   profileState: TProfileState;
   skills: TSkill[];
+  projectList: TProject[];
   workList: TWorkHistory[];
   educationList: TEducation[];
 };
 function MyDocument({
   profileState,
   skills,
+  projectList,
   workList,
   educationList,
 }: MyDocumentProps) {
@@ -218,6 +221,24 @@ function MyDocument({
             ))}
           </View>
         </View>
+        <View
+          style={{ marginBottom: 24, display: "flex", flexDirection: "row" }}
+        >
+          <Text style={styles.heading}>Projects</Text>
+          <View
+            style={{
+              width: "70%",
+              fontSize: 12,
+            }}
+          >
+            {projectList.map((project) => (
+              <View key={project.name} style={{ marginBottom: 8 }}>
+                <Text style={{ marginBottom: 4 }}>{project.name}</Text>
+                <Text style={{ color: "#444" }}>{project.description}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
         <View style={{ marginBottom: 24 }}>
           <Text style={{ ...styles.heading, marginBottom: 16 }}>
             Employment History
@@ -298,12 +319,14 @@ function MyDocument({
 type PreviewProps = {
   profileState: TProfileState;
   skills: TSkill[];
+  projectList: TProject[];
   workList: TWorkHistory[];
   educationList: TEducation[];
 };
 function Preview({
   profileState,
   skills,
+  projectList,
   workList,
   educationList,
 }: PreviewProps) {
@@ -324,6 +347,7 @@ function Preview({
               <MyDocument
                 profileState={profileState}
                 skills={skills}
+                projectList={projectList}
                 workList={workList}
                 educationList={educationList}
               />

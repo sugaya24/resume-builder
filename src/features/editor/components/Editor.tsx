@@ -6,6 +6,7 @@ import { RiCloseCircleLine } from "react-icons/ri";
 import {
   TEducation,
   TProfileState,
+  TProject,
   TSkill,
   TWorkHistory,
 } from "../../../components/layouts/EditLayout";
@@ -325,6 +326,103 @@ function SkillList({ skills, setSkills }: SkillListProps) {
   );
 }
 
+type ProjectProps = {
+  id: number;
+  projectList: TProject[];
+  setProjectList: Dispatch<SetStateAction<TProject[]>>;
+};
+function Project({ id, projectList, setProjectList }: ProjectProps) {
+  const [isEditing, setIsEditing] = useState(true);
+
+  return (
+    <div className="mb-4 rounded-lg border bg-white p-4">
+      <div className="flex justify-between">
+        {isEditing ? (
+          <input
+            className="mr-4 w-full rounded-lg border py-2 px-4 shadow"
+            type="text"
+            value={projectList[id].name}
+            placeholder="Project name"
+            onChange={(e) => {
+              const updateList = projectList.map((project, i) => {
+                if (id === i) {
+                  project.name = e.target.value;
+                }
+                return project;
+              });
+              setProjectList(updateList);
+            }}
+          />
+        ) : (
+          <h2 className="text-2xl font-semibold">
+            {projectList[id].name || "(Project name)"}
+          </h2>
+        )}
+        <div
+          className="cursor-pointer"
+          onClick={() => setIsEditing((prev) => !prev)}
+        >
+          {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+        </div>
+      </div>
+      {isEditing ? (
+        <div className="mt-4">
+          <textarea
+            className="w-full rounded-lg border p-4 shadow"
+            value={projectList[id].description}
+            rows={5}
+            placeholder="Description"
+            onChange={(e) => {
+              const updateList = projectList.map((project, i) => {
+                if (id === i) {
+                  project.description = e.target.value;
+                }
+                return project;
+              });
+              setProjectList(updateList);
+            }}
+          />
+        </div>
+      ) : (
+        <div>{projectList[id].description}</div>
+      )}
+    </div>
+  );
+}
+
+type ProjectListProps = {
+  projectList: TProject[];
+  setProjectList: Dispatch<SetStateAction<TProject[]>>;
+};
+function ProjectList({ projectList, setProjectList }: ProjectListProps) {
+  return (
+    <div>
+      {projectList.map((_project, i) => (
+        <Project
+          key={i}
+          id={i}
+          projectList={projectList}
+          setProjectList={setProjectList}
+        />
+      ))}
+      <span
+        className="cursor-pointer text-sky-600"
+        onClick={() => {
+          setProjectList([
+            ...projectList,
+            {
+              name: "",
+              description: "",
+            },
+          ]);
+        }}
+      >
+        + Add Project
+      </span>
+    </div>
+  );
+}
+
 function Work({
   id,
   workList,
@@ -510,7 +608,7 @@ function WorkHistory({
           ])
         }
       >
-        + Add History
+        + Add Work History
       </span>
     </div>
   );
@@ -684,7 +782,7 @@ function EducationList({
           ])
         }
       >
-        + Add History
+        + Add Education
       </span>
     </div>
   );
@@ -695,6 +793,8 @@ type EditorProps = {
   setProfileState: Dispatch<SetStateAction<TProfileState>>;
   skills: TSkill[];
   setSkills: Dispatch<SetStateAction<TSkill[]>>;
+  projectList: TProject[];
+  setProjectList: Dispatch<SetStateAction<TProject[]>>;
   workList: TWorkHistory[];
   setWorkList: Dispatch<SetStateAction<TWorkHistory[]>>;
   educationList: TEducation[];
@@ -705,6 +805,8 @@ function Editor({
   setProfileState,
   skills,
   setSkills,
+  projectList,
+  setProjectList,
   workList,
   setWorkList,
   educationList,
@@ -722,6 +824,13 @@ function Editor({
       <div className="p-4">
         <h1 className="mb-8 text-3xl font-bold">Skill</h1>
         <SkillList skills={skills} setSkills={setSkills} />
+      </div>
+      <div className="p-4">
+        <h1 className="mb-8 text-3xl font-bold">Projects</h1>
+        <ProjectList
+          projectList={projectList}
+          setProjectList={setProjectList}
+        />
       </div>
       <div className="p-4">
         <h1 className="mb-8 text-3xl font-bold">Work History</h1>

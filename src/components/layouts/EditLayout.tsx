@@ -20,6 +20,10 @@ export type TSkill = {
   name: string[];
   category: string;
 };
+export type TProject = {
+  name: string;
+  description: string;
+};
 export type TWorkHistory = {
   jobTitle: string;
   employer: string;
@@ -44,6 +48,7 @@ export default function EditPage() {
     summary: "",
   });
   const [skills, setSkills] = useState<TSkill[]>([]);
+  const [projectList, setProjectList] = useState<TProject[]>([]);
   const [workList, setWorkList] = useState<TWorkHistory[]>([]);
   const [educationList, setEducationList] = useState<TEducation[]>([]);
 
@@ -59,6 +64,8 @@ export default function EditPage() {
                   setProfileState={setProfileState}
                   skills={skills}
                   setSkills={setSkills}
+                  projectList={projectList}
+                  setProjectList={setProjectList}
                   workList={workList}
                   setWorkList={setWorkList}
                   educationList={educationList}
@@ -69,6 +76,7 @@ export default function EditPage() {
                 <Preview
                   profileState={profileState}
                   skills={skills}
+                  projectList={projectList}
                   workList={workList}
                   educationList={educationList}
                 />
