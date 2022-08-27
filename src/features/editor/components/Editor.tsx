@@ -216,10 +216,12 @@ function Skill({ id, skills, setSkills }: SkillProps) {
             </h2>
           )}
           <div
-            className="cursor-pointer"
+            className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
             onClick={() => setIsEditing((prev) => !prev)}
           >
-            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+            <button className="flex h-8 w-8 items-center justify-center">
+              {isEditing ? <HiChevronUp width={"100%"} /> : <HiChevronDown />}
+            </button>
           </div>
         </div>
         {isEditing ? (
@@ -359,10 +361,12 @@ function Project({ id, projectList, setProjectList }: ProjectProps) {
           </h2>
         )}
         <div
-          className="cursor-pointer"
+          className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
           onClick={() => setIsEditing((prev) => !prev)}
         >
-          {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+          <button className="flex h-8 w-8 items-center justify-center">
+            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+          </button>
         </div>
       </div>
       {isEditing ? (
@@ -458,10 +462,12 @@ function Work({
           </div>
 
           <div
-            className="cursor-pointer"
+            className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
             onClick={() => setIsEditing((prev) => !prev)}
           >
-            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+            <button className="flex h-8 w-8 items-center justify-center">
+              {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+            </button>
           </div>
         </div>
         {isEditing && (
@@ -657,10 +663,12 @@ function Education({ id, educationList, setEducationList }: EducationProps) {
             )}
           </div>
           <div
-            className="cursor-pointer"
+            className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
             onClick={() => setIsEditing((prev) => !prev)}
           >
-            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+            <button className="flex h-8 w-8 items-center justify-center">
+              {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+            </button>
           </div>
         </div>
         {isEditing && (
