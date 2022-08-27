@@ -1,5 +1,6 @@
 import {
   Document,
+  Font,
   PDFViewer,
   Page,
   StyleSheet,
@@ -24,12 +25,23 @@ import LinkedinIcon from "./LinkeinIcon";
 import LocationMarkerIcon from "./LocationMarkerIcon";
 import PhoneIcon from "./PhoneIcon";
 
+Font.register({
+  family: "Roboto",
+  fonts: [
+    { src: "./Roboto-Regular.ttf" },
+    { src: "./Roboto-Italic.ttf", fontStyle: "italic" },
+    { src: "./Roboto-bold.ttf", fontWeight: "bold" },
+  ],
+});
+
 // Create styles
 const styles = StyleSheet.create({
   page: {
+    fontFamily: "Roboto",
     padding: 32,
   },
   heading: {
+    fontFamily: "Roboto",
     fontWeight: "bold",
     borderBottom: 2,
     marginRight: "auto",
@@ -47,6 +59,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 32,
+    fontFamily: "Roboto",
     fontWeight: "bold",
     marginBottom: 4,
   },
@@ -203,7 +216,9 @@ function MyDocument({
           <View style={{ width: "70%", fontSize: 12 }}>
             {skills.map((skill) => (
               <>
-                <Text style={{ marginBottom: 4 }}>{skill.category}</Text>
+                <Text style={{ marginBottom: 4, fontWeight: "bold" }}>
+                  {skill.category}
+                </Text>
                 <View
                   style={{
                     display: "flex",
@@ -233,7 +248,9 @@ function MyDocument({
           >
             {projectList.map((project) => (
               <View key={project.name} style={{ marginBottom: 8 }}>
-                <Text style={{ marginBottom: 4 }}>{project.name}</Text>
+                <Text style={{ marginBottom: 4, fontWeight: "bold" }}>
+                  {project.name}
+                </Text>
                 <Text style={{ color: "#444" }}>{project.description}</Text>
               </View>
             ))}
@@ -301,7 +318,9 @@ function MyDocument({
                     <Text style={styles.educationMainHeading}>
                       {`${education.school || "(school name)"}`}
                     </Text>
-                    <Text style={{}}>{education.city || ""}</Text>
+                    <Text style={{ fontFamily: "Roboto", fontStyle: "italic" }}>
+                      {education.city || ""}
+                    </Text>
                   </View>
                   <Text style={{ marginBottom: 8, color: "#444" }}>
                     {education.degree}
