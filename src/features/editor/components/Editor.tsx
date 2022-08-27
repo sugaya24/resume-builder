@@ -1,5 +1,12 @@
+import autoAnimate from "@formkit/auto-animate";
 import { format } from "date-fns";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 import { RiCloseCircleLine } from "react-icons/ri";
 
@@ -171,6 +178,11 @@ type SkillProps = {
 function Skill({ id, skills, setSkills }: SkillProps) {
   const [isEditing, setIsEditing] = useState(true);
   const [skill, setSkill] = useState("");
+  const parent = useRef(null);
+
+  useEffect(() => {
+    parent.current && autoAnimate(parent.current);
+  }, [parent]);
 
   const handleSubmit = (
     e:
@@ -191,112 +203,108 @@ function Skill({ id, skills, setSkills }: SkillProps) {
   };
 
   return (
-    <>
-      <div className="mb-4 rounded-lg border bg-white p-4">
-        <div className="flex justify-between">
-          {isEditing ? (
+    <div className="mb-4 rounded-lg border bg-white p-4" ref={parent}>
+      <div className="flex justify-between">
+        <h2 className="text-2xl font-semibold">
+          {skills[id].category || "(Category)"}
+        </h2>
+        <div
+          className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
+          onClick={() => setIsEditing((prev) => !prev)}
+        >
+          <button className="flex h-8 w-8 items-center justify-center">
+            {isEditing ? <HiChevronUp width={"100%"} /> : <HiChevronDown />}
+          </button>
+        </div>
+      </div>
+      {isEditing && (
+        <div className="mt-4 flex flex-col gap-4">
+          <input
+            className="mr-4 w-full rounded-lg border py-2 px-4 shadow"
+            type="text"
+            value={skills[id].category}
+            placeholder="Category"
+            onChange={(e) => {
+              const updateSkills = skills.map((s, i) => {
+                if (id === i) {
+                  s.category = e.target.value;
+                }
+                return s;
+              });
+              setSkills(updateSkills);
+            }}
+          />
+          <div className="flex flex-wrap gap-4">
+            {skills[id].name.map((s, i) => (
+              <span
+                key={s}
+                className="inline-flex w-fit items-center rounded-full border py-1 pl-4 text-gray-800"
+              >
+                {s}
+                <div
+                  className="ml-2 cursor-pointer rounded-full p-2 duration-100 hover:bg-gray-200"
+                  onClick={() => {
+                    const updated = skills.map((s, j) => {
+                      if (id === j) {
+                        s.name = s.name.filter((_item, k) => i !== k);
+                      }
+                      return s;
+                    });
+                    setSkills(updated);
+                  }}
+                >
+                  <RiCloseCircleLine />
+                </div>
+              </span>
+            ))}
+          </div>
+          <div className="relative flex w-full items-center justify-end">
             <input
               className="mr-4 w-full rounded-lg border py-2 px-4 shadow"
+              value={skill}
               type="text"
-              value={skills[id].category}
-              placeholder="Category"
+              placeholder="Skill"
               onChange={(e) => {
-                const updateSkills = skills.map((s, i) => {
-                  if (id === i) {
-                    s.category = e.target.value;
-                  }
-                  return s;
-                });
-                setSkills(updateSkills);
+                setSkill(e.target.value);
+              }}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                if (e.nativeEvent.isComposing || e.key !== "Enter") {
+                  return;
+                }
+                handleSubmit(e);
               }}
             />
-          ) : (
-            <h2 className="text-2xl font-semibold">
-              {skills[id].category || "(Category)"}
-            </h2>
-          )}
-          <div
-            className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
-            onClick={() => setIsEditing((prev) => !prev)}
-          >
-            <button className="flex h-8 w-8 items-center justify-center">
-              {isEditing ? <HiChevronUp width={"100%"} /> : <HiChevronDown />}
-            </button>
+            <Button
+              text={"Add"}
+              onClick={(
+                e:
+                  | React.KeyboardEvent<HTMLInputElement>
+                  | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+              ) => handleSubmit(e)}
+              onSubmit={(
+                e:
+                  | React.KeyboardEvent<HTMLInputElement>
+                  | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+              ) => handleSubmit(e)}
+            />
           </div>
         </div>
-        {isEditing ? (
-          <div className="mt-4 flex flex-col gap-4">
-            <div className="flex flex-wrap gap-4">
-              {skills[id].name.map((s, i) => (
-                <span
-                  key={s}
-                  className="inline-flex w-fit items-center rounded-full border py-1 pl-4 text-gray-800"
-                >
-                  {s}
-                  <div
-                    className="ml-2 cursor-pointer rounded-full p-2 duration-100 hover:bg-gray-200"
-                    onClick={() => {
-                      const updated = skills.map((s, j) => {
-                        if (id === j) {
-                          s.name = s.name.filter((_item, k) => i !== k);
-                        }
-                        return s;
-                      });
-                      setSkills(updated);
-                    }}
-                  >
-                    <RiCloseCircleLine />
-                  </div>
-                </span>
-              ))}
-            </div>
-            <div className="relative flex w-full items-center justify-end">
-              <input
-                className="mr-4 w-full rounded-lg border py-2 px-4 shadow"
-                value={skill}
-                type="text"
-                placeholder="Skill"
-                onChange={(e) => {
-                  setSkill(e.target.value);
-                }}
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                  if (e.nativeEvent.isComposing || e.key !== "Enter") {
-                    return;
-                  }
-                  handleSubmit(e);
-                }}
-              />
-              <Button
-                text={"Add"}
-                onClick={(
-                  e:
-                    | React.KeyboardEvent<HTMLInputElement>
-                    | React.MouseEvent<HTMLButtonElement, MouseEvent>,
-                ) => handleSubmit(e)}
-                onSubmit={(
-                  e:
-                    | React.KeyboardEvent<HTMLInputElement>
-                    | React.MouseEvent<HTMLButtonElement, MouseEvent>,
-                ) => handleSubmit(e)}
-              />
-            </div>
+      )}
+      {!isEditing && (
+        <div className="mt-4 flex flex-col gap-4">
+          <div className="flex flex-wrap gap-4">
+            {skills[id].name.map((s) => (
+              <span
+                key={s}
+                className="inline-flex w-fit rounded-full border py-2 px-4"
+              >
+                {s}
+              </span>
+            ))}
           </div>
-        ) : (
-          <div className="mt-4 flex flex-col gap-4">
-            <div className="flex flex-wrap gap-4">
-              {skills[id].name.map((s) => (
-                <span
-                  key={s}
-                  className="inline-flex w-fit rounded-full border py-2 px-4"
-                >
-                  {s}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -335,13 +343,31 @@ type ProjectProps = {
 };
 function Project({ id, projectList, setProjectList }: ProjectProps) {
   const [isEditing, setIsEditing] = useState(true);
+  const parent = useRef(null);
+
+  useEffect(() => {
+    parent.current && autoAnimate(parent.current);
+  }, [parent]);
 
   return (
-    <div className="mb-4 rounded-lg border bg-white p-4">
+    <div className="mb-4 rounded-lg border bg-white p-4" ref={parent}>
       <div className="flex justify-between">
-        {isEditing ? (
+        <h2 className="text-2xl font-semibold">
+          {projectList[id].name || "(Project name)"}
+        </h2>
+        <div
+          className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
+          onClick={() => setIsEditing((prev) => !prev)}
+        >
+          <button className="flex h-8 w-8 items-center justify-center">
+            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+          </button>
+        </div>
+      </div>
+      {isEditing && (
+        <div className="mt-4">
           <input
-            className="mr-4 w-full rounded-lg border py-2 px-4 shadow"
+            className="mb-4 mr-4 w-full rounded-lg border py-2 px-4 shadow"
             type="text"
             value={projectList[id].name}
             placeholder="Project name"
@@ -355,40 +381,24 @@ function Project({ id, projectList, setProjectList }: ProjectProps) {
               setProjectList(updateList);
             }}
           />
-        ) : (
-          <h2 className="text-2xl font-semibold">
-            {projectList[id].name || "(Project name)"}
-          </h2>
-        )}
-        <div
-          className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
-          onClick={() => setIsEditing((prev) => !prev)}
-        >
-          <button className="flex h-8 w-8 items-center justify-center">
-            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
-          </button>
+          <div className="mt-4">
+            <textarea
+              className="w-full rounded-lg border p-4 shadow"
+              value={projectList[id].description}
+              rows={5}
+              placeholder="Description"
+              onChange={(e) => {
+                const updateList = projectList.map((project, i) => {
+                  if (id === i) {
+                    project.description = e.target.value;
+                  }
+                  return project;
+                });
+                setProjectList(updateList);
+              }}
+            />
+          </div>
         </div>
-      </div>
-      {isEditing ? (
-        <div className="mt-4">
-          <textarea
-            className="w-full rounded-lg border p-4 shadow"
-            value={projectList[id].description}
-            rows={5}
-            placeholder="Description"
-            onChange={(e) => {
-              const updateList = projectList.map((project, i) => {
-                if (id === i) {
-                  project.description = e.target.value;
-                }
-                return project;
-              });
-              setProjectList(updateList);
-            }}
-          />
-        </div>
-      ) : (
-        <div>{projectList[id].description}</div>
       )}
     </div>
   );
@@ -437,141 +447,121 @@ function Work({
   setWorkList: Dispatch<SetStateAction<TWorkHistory[]>>;
 }) {
   const [isEditing, setIsEditing] = useState(false);
+  const parent = useRef(null);
+
+  useEffect(() => {
+    parent.current && autoAnimate(parent.current);
+  }, [parent]);
 
   return (
-    <>
-      <div className="mb-4 rounded-lg border bg-white p-4">
-        <div className="flex justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold">
-              {workList[id].jobTitle || "(Job Title)"}
-              {workList[id].employer && ` at ${workList[id].employer}`}
-            </h2>
-            {workList[id].startDate && workList[id].endDate && (
-              <span className="font-light text-gray-400">
-                {`${format(
-                  new Date(workList[id].startDate as DateYMString),
-                  "MMM yyyy",
-                )} - 
+    <div className="mb-4 rounded-lg border bg-white p-4" ref={parent}>
+      <div className="flex justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold">
+            {workList[id].jobTitle || "(Job Title)"}
+            {workList[id].employer && ` at ${workList[id].employer}`}
+          </h2>
+          {workList[id].startDate && workList[id].endDate && (
+            <span className="font-light text-gray-400">
+              {`${format(
+                new Date(workList[id].startDate as DateYMString),
+                "MMM yyyy",
+              )} - 
                 ${format(
                   new Date(workList[id].endDate as DateYMString),
                   "MMM yyyy",
                 )}`}
-              </span>
-            )}
-          </div>
-
-          <div
-            className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
-            onClick={() => setIsEditing((prev) => !prev)}
-          >
-            <button className="flex h-8 w-8 items-center justify-center">
-              {isEditing ? <HiChevronUp /> : <HiChevronDown />}
-            </button>
-          </div>
+            </span>
+          )}
         </div>
-        {isEditing && (
-          <div className="mt-4 flex flex-col gap-4">
-            <Input
-              labelText="Job Title"
-              labelFor="job title"
-              type="text"
-              placeholder="Job Title"
-              value={workList[id].jobTitle}
-              onChange={(e) => {
-                const updateList = workList.map((work, i) => {
-                  if (id === i) {
-                    work.jobTitle = e.target.value;
-                  }
-                  return work;
-                });
-                setWorkList(updateList);
-              }}
-            />
-            <Input
-              labelText="Employer"
-              labelFor="employer"
-              type="text"
-              placeholder="Employer"
-              value={workList[id].employer}
-              onChange={(e) => {
-                const updateList = workList.map((work, i) => {
-                  if (id === i) {
-                    work.employer = e.target.value;
-                  }
-                  return work;
-                });
-                setWorkList(updateList);
-              }}
-            />
-            <div className="flex w-full flex-row gap-8">
-              <div className="w-1/2">
-                <Input
-                  labelText="Start Date"
-                  placeholder="Date Picker"
-                  type="month"
-                  value={
-                    workList[id].startDate
-                      ? format(
-                          new Date(workList[id].startDate as DateYMString),
-                          "yyyy-MM",
-                        )
-                      : ""
-                  }
-                  labelFor=""
-                  onChange={(e) => {
-                    const updateList = workList.map((work, i) => {
-                      if (id === i) {
-                        work.startDate = e.target.value as DateYMString;
-                      }
-                      return work;
-                    });
-                    setWorkList(updateList);
-                  }}
-                />
-              </div>
-              <div className="w-1/2">
-                <Input
-                  labelText="End Date"
-                  placeholder="Date Picker"
-                  type="month"
-                  value={
-                    workList[id].endDate
-                      ? format(
-                          new Date(workList[id].endDate as DateYMString),
-                          "yyyy-MM",
-                        )
-                      : ""
-                  }
-                  labelFor=""
-                  onChange={(e) => {
-                    const updateList = workList.map((work, i) => {
-                      if (id === i) {
-                        work.endDate = e.target.value as DateYMString;
-                      }
-                      return work;
-                    });
-                    setWorkList(updateList);
-                  }}
-                />
-              </div>
-            </div>
-            <div className="w-full">
-              <label
-                className="mb-2 block text-sm font-bold text-gray-700"
-                htmlFor="Description"
-              >
-                Description
-              </label>
-              <textarea
-                name="work description"
-                className="w-full rounded-lg border p-4 shadow"
-                rows={10}
-                value={workList[id].description}
+
+        <div
+          className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
+          onClick={() => setIsEditing((prev) => !prev)}
+        >
+          <button className="flex h-8 w-8 items-center justify-center">
+            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+          </button>
+        </div>
+      </div>
+      {isEditing && (
+        <div className="mt-4 flex flex-col gap-4">
+          <Input
+            labelText="Job Title"
+            labelFor="job title"
+            type="text"
+            placeholder="Job Title"
+            value={workList[id].jobTitle}
+            onChange={(e) => {
+              const updateList = workList.map((work, i) => {
+                if (id === i) {
+                  work.jobTitle = e.target.value;
+                }
+                return work;
+              });
+              setWorkList(updateList);
+            }}
+          />
+          <Input
+            labelText="Employer"
+            labelFor="employer"
+            type="text"
+            placeholder="Employer"
+            value={workList[id].employer}
+            onChange={(e) => {
+              const updateList = workList.map((work, i) => {
+                if (id === i) {
+                  work.employer = e.target.value;
+                }
+                return work;
+              });
+              setWorkList(updateList);
+            }}
+          />
+          <div className="flex w-full flex-row gap-8">
+            <div className="w-1/2">
+              <Input
+                labelText="Start Date"
+                placeholder="Date Picker"
+                type="month"
+                value={
+                  workList[id].startDate
+                    ? format(
+                        new Date(workList[id].startDate as DateYMString),
+                        "yyyy-MM",
+                      )
+                    : ""
+                }
+                labelFor=""
                 onChange={(e) => {
                   const updateList = workList.map((work, i) => {
                     if (id === i) {
-                      work.description = e.target.value;
+                      work.startDate = e.target.value as DateYMString;
+                    }
+                    return work;
+                  });
+                  setWorkList(updateList);
+                }}
+              />
+            </div>
+            <div className="w-1/2">
+              <Input
+                labelText="End Date"
+                placeholder="Date Picker"
+                type="month"
+                value={
+                  workList[id].endDate
+                    ? format(
+                        new Date(workList[id].endDate as DateYMString),
+                        "yyyy-MM",
+                      )
+                    : ""
+                }
+                labelFor=""
+                onChange={(e) => {
+                  const updateList = workList.map((work, i) => {
+                    if (id === i) {
+                      work.endDate = e.target.value as DateYMString;
                     }
                     return work;
                   });
@@ -580,9 +570,32 @@ function Work({
               />
             </div>
           </div>
-        )}
-      </div>
-    </>
+          <div className="w-full">
+            <label
+              className="mb-2 block text-sm font-bold text-gray-700"
+              htmlFor="Description"
+            >
+              Description
+            </label>
+            <textarea
+              name="work description"
+              className="w-full rounded-lg border p-4 shadow"
+              rows={10}
+              value={workList[id].description}
+              onChange={(e) => {
+                const updateList = workList.map((work, i) => {
+                  if (id === i) {
+                    work.description = e.target.value;
+                  }
+                  return work;
+                });
+                setWorkList(updateList);
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -627,6 +640,11 @@ type EducationProps = {
 };
 function Education({ id, educationList, setEducationList }: EducationProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const parent = useRef(null);
+
+  useEffect(() => {
+    parent.current && autoAnimate(parent.current);
+  }, [parent]);
 
   const handleOnChange =
     (key: keyof TEducation) =>
@@ -642,118 +660,116 @@ function Education({ id, educationList, setEducationList }: EducationProps) {
     };
 
   return (
-    <>
-      <div className="mb-4 rounded-lg border bg-white p-4">
-        <div className="flex justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold">
-              {educationList[id].school || "(School)"}
-            </h2>
-            {educationList[id].startDate && educationList[id].endDate && (
-              <span className="font-light text-gray-400">
-                {`${format(
-                  new Date(educationList[id].startDate as DateYMString),
-                  "MMM yyyy",
-                )} - 
+    <div className="mb-4 rounded-lg border bg-white p-4" ref={parent}>
+      <div className="flex justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold">
+            {educationList[id].school || "(School)"}
+          </h2>
+          {educationList[id].startDate && educationList[id].endDate && (
+            <span className="font-light text-gray-400">
+              {`${format(
+                new Date(educationList[id].startDate as DateYMString),
+                "MMM yyyy",
+              )} - 
                 ${format(
                   new Date(educationList[id].endDate as DateYMString),
                   "MMM yyyy",
                 )}`}
-              </span>
-            )}
+            </span>
+          )}
+        </div>
+        <div
+          className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
+          onClick={() => setIsEditing((prev) => !prev)}
+        >
+          <button className="flex h-8 w-8 items-center justify-center">
+            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+          </button>
+        </div>
+      </div>
+      {isEditing && (
+        <div className="mt-4 flex flex-col gap-4">
+          <Input
+            labelText="School"
+            labelFor="school"
+            type="text"
+            placeholder="School"
+            value={educationList[id].school}
+            onChange={(e) => handleOnChange("school")(id)(e)}
+          />
+          <Input
+            labelText="Degree"
+            labelFor="degree"
+            type="text"
+            placeholder="Degree"
+            value={educationList[id].degree}
+            onChange={(e) => handleOnChange("degree")(id)(e)}
+          />
+          <Input
+            labelText="City"
+            labelFor="city"
+            type="text"
+            placeholder="City"
+            value={educationList[id].city || ""}
+            onChange={(e) => handleOnChange("city")(id)(e)}
+          />
+          <div className="flex w-full flex-row gap-8">
+            <div className="w-1/2">
+              <Input
+                labelText="Start Date"
+                placeholder="Date Picker"
+                type="month"
+                value={
+                  educationList[id].startDate
+                    ? format(
+                        new Date(educationList[id].startDate as DateYMString),
+                        "yyyy-MM",
+                      )
+                    : ""
+                }
+                labelFor="start date"
+                onChange={(e) => handleOnChange("startDate")(id)(e)}
+              />
+            </div>
+            <div className="w-1/2">
+              <Input
+                labelText="End Date"
+                placeholder="Date Picker"
+                type="month"
+                value={
+                  educationList[id].endDate
+                    ? format(
+                        new Date(educationList[id].endDate as DateYMString),
+                        "yyyy-MM",
+                      )
+                    : ""
+                }
+                labelFor="end date"
+                onChange={(e) => handleOnChange("endDate")(id)(e)}
+              />
+            </div>
           </div>
-          <div
-            className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
-            onClick={() => setIsEditing((prev) => !prev)}
-          >
-            <button className="flex h-8 w-8 items-center justify-center">
-              {isEditing ? <HiChevronUp /> : <HiChevronDown />}
-            </button>
+          <div className="w-full">
+            <label
+              className="mb-2 block text-sm font-bold text-gray-700"
+              htmlFor="Description"
+            >
+              Description
+            </label>
+            <textarea
+              name="work description"
+              className="w-full rounded-lg border p-4 shadow"
+              rows={10}
+              value={educationList[id].description}
+              onChange={(e) => handleOnChange("description")(id)(e)}
+            >
+              {educationList[id].description}
+            </textarea>
           </div>
         </div>
-        {isEditing && (
-          <div className="mt-4 flex flex-col gap-4">
-            <Input
-              labelText="School"
-              labelFor="school"
-              type="text"
-              placeholder="School"
-              value={educationList[id].school}
-              onChange={(e) => handleOnChange("school")(id)(e)}
-            />
-            <Input
-              labelText="Degree"
-              labelFor="degree"
-              type="text"
-              placeholder="Degree"
-              value={educationList[id].degree}
-              onChange={(e) => handleOnChange("degree")(id)(e)}
-            />
-            <Input
-              labelText="City"
-              labelFor="city"
-              type="text"
-              placeholder="City"
-              value={educationList[id].city || ""}
-              onChange={(e) => handleOnChange("city")(id)(e)}
-            />
-            <div className="flex w-full flex-row gap-8">
-              <div className="w-1/2">
-                <Input
-                  labelText="Start Date"
-                  placeholder="Date Picker"
-                  type="month"
-                  value={
-                    educationList[id].startDate
-                      ? format(
-                          new Date(educationList[id].startDate as DateYMString),
-                          "yyyy-MM",
-                        )
-                      : ""
-                  }
-                  labelFor="start date"
-                  onChange={(e) => handleOnChange("startDate")(id)(e)}
-                />
-              </div>
-              <div className="w-1/2">
-                <Input
-                  labelText="End Date"
-                  placeholder="Date Picker"
-                  type="month"
-                  value={
-                    educationList[id].endDate
-                      ? format(
-                          new Date(educationList[id].endDate as DateYMString),
-                          "yyyy-MM",
-                        )
-                      : ""
-                  }
-                  labelFor="end date"
-                  onChange={(e) => handleOnChange("endDate")(id)(e)}
-                />
-              </div>
-            </div>
-            <div className="w-full">
-              <label
-                className="mb-2 block text-sm font-bold text-gray-700"
-                htmlFor="Description"
-              >
-                Description
-              </label>
-              <textarea
-                name="work description"
-                className="w-full rounded-lg border p-4 shadow"
-                rows={10}
-                value={educationList[id].description}
-                onChange={(e) => handleOnChange("description")(id)(e)}
-              >
-                {educationList[id].description}
-              </textarea>
-            </div>
-          </div>
-        )}
-      </div>
-    </>
+      )}
+    </div>
   );
 }
 
