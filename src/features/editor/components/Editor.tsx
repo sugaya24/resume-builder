@@ -113,13 +113,35 @@ function PersonalDetail({
         </div>
         <div className="w-1/2">
           <Input
-            value={profileState.github || ""}
+            value={profileState.github.name || ""}
             labelText="GitHub"
             labelFor="github"
             type="text"
             placeholder="GitHub"
             onChange={(e) =>
-              setProfileState({ ...profileState, github: e.target.value })
+              setProfileState({
+                ...profileState,
+                github: {
+                  ...profileState.github,
+                  name: e.target.value,
+                },
+              })
+            }
+          />
+          <Input
+            value={profileState.github.url}
+            labelText={""}
+            labelFor={"github link"}
+            type={"text"}
+            placeholder={"URL"}
+            onChange={(e) =>
+              setProfileState({
+                ...profileState,
+                github: {
+                  ...profileState.github,
+                  url: e.target.value,
+                },
+              })
             }
           />
         </div>
@@ -127,25 +149,69 @@ function PersonalDetail({
       <div className="flex flex-row gap-8">
         <div className="w-1/2">
           <Input
-            value={profileState.linkedin || ""}
+            value={profileState.linkedin.name || ""}
             labelText="LinkedIn"
             labelFor="linkedin"
             type="text"
             placeholder="LinkedIn"
             onChange={(e) =>
-              setProfileState({ ...profileState, linkedin: e.target.value })
+              setProfileState({
+                ...profileState,
+                linkedin: {
+                  ...profileState.linkedin,
+                  name: e.target.value,
+                },
+              })
+            }
+          />
+          <Input
+            value={profileState.linkedin.url}
+            labelText={""}
+            labelFor={"Linkedin link"}
+            type={"text"}
+            placeholder="URL"
+            onChange={(e) =>
+              setProfileState({
+                ...profileState,
+                linkedin: {
+                  ...profileState.linkedin,
+                  url: e.target.value,
+                },
+              })
             }
           />
         </div>
         <div className="w-1/2">
           <Input
-            value={profileState.website || ""}
+            value={profileState.website.name || ""}
             labelText="Website"
             labelFor="website"
             type="text"
             placeholder="Website"
             onChange={(e) =>
-              setProfileState({ ...profileState, website: e.target.value })
+              setProfileState({
+                ...profileState,
+                website: {
+                  ...profileState.website,
+                  name: e.target.value,
+                },
+              })
+            }
+          />
+          <Input
+            value={profileState.website.url}
+            labelText={""}
+            labelFor={"Website link"}
+            type={"text"}
+            placeholder="URL"
+            onChange={(e) =>
+              setProfileState({
+                ...profileState,
+                website: {
+                  ...profileState.website,
+                  url: e.target.value,
+                },
+              })
             }
           />
         </div>
@@ -352,9 +418,12 @@ function Project({ id, projectList, setProjectList }: ProjectProps) {
   return (
     <div className="mb-4 rounded-lg border bg-white p-4" ref={parent}>
       <div className="flex justify-between">
-        <h2 className="text-2xl font-semibold">
-          {projectList[id].name || "(Project name)"}
-        </h2>
+        <div className="flex flex-col">
+          <h2 className="text-2xl font-semibold">
+            {projectList[id].name || "(Project name)"}
+          </h2>
+          <div className="mt-2">{projectList[id].url}</div>
+        </div>
         <div
           className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
           onClick={() => setIsEditing((prev) => !prev)}
@@ -381,7 +450,22 @@ function Project({ id, projectList, setProjectList }: ProjectProps) {
               setProjectList(updateList);
             }}
           />
-          <div className="mt-4">
+          <input
+            className="mb-4 mr-4 w-full rounded-lg border py-2 px-4 shadow"
+            type="text"
+            value={projectList[id].url}
+            placeholder="Project URL"
+            onChange={(e) => {
+              const updateList = projectList.map((project, i) => {
+                if (id === i) {
+                  project.url = e.target.value;
+                }
+                return project;
+              });
+              setProjectList(updateList);
+            }}
+          />
+          <div className="">
             <textarea
               className="w-full rounded-lg border p-4 shadow"
               value={projectList[id].description}
@@ -426,6 +510,7 @@ function ProjectList({ projectList, setProjectList }: ProjectListProps) {
             ...projectList,
             {
               name: "",
+              url: "",
               description: "",
             },
           ]);

@@ -9,12 +9,21 @@ export type TProfileState = {
   firstName: string;
   lastName: string;
   summary: string;
-  address?: string;
-  phoneNumber?: string;
-  email?: string;
-  github?: string;
-  linkedin?: string;
-  website?: string;
+  address: string;
+  phoneNumber: string;
+  email: string;
+  github: {
+    name: string;
+    url: string;
+  };
+  linkedin: {
+    name: string;
+    url: string;
+  };
+  website: {
+    name: string;
+    url: string;
+  };
 };
 export type TSkill = {
   name: string[];
@@ -22,6 +31,7 @@ export type TSkill = {
 };
 export type TProject = {
   name: string;
+  url: string;
   description: string;
 };
 export type TWorkHistory = {
@@ -46,6 +56,21 @@ export default function EditPage() {
     firstName: "",
     lastName: "",
     summary: "",
+    address: "",
+    email: "",
+    phoneNumber: "",
+    github: {
+      name: "",
+      url: "",
+    },
+    linkedin: {
+      name: "",
+      url: "",
+    },
+    website: {
+      name: "",
+      url: "",
+    },
   });
   const [skills, setSkills] = useState<TSkill[]>([]);
   const [projectList, setProjectList] = useState<TProject[]>([]);

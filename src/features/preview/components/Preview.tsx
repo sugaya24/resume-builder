@@ -1,6 +1,7 @@
 import {
   Document,
   Font,
+  Link,
   PDFViewer,
   Page,
   StyleSheet,
@@ -177,28 +178,57 @@ function MyDocument({
                 </Text>
               </View>
             )}
-            {profileState.github && (
+            {profileState.github.name && (
               <View style={styles.profileItem}>
-                <GitHubIcon />
-                <Text style={styles.profileItemText}>
-                  {profileState.github}
-                </Text>
+                <View style={{ width: 12 }}>
+                  <GitHubIcon />
+                </View>
+                {profileState.github.url ? (
+                  <Link
+                    style={styles.profileItemText}
+                    src={profileState.github.url}
+                  >
+                    {profileState.github.name}
+                  </Link>
+                ) : (
+                  <Text style={styles.profileItemText}>
+                    {profileState.github.name}
+                  </Text>
+                )}
               </View>
             )}
-            {profileState.linkedin && (
+            {profileState.linkedin.name && (
               <View style={styles.profileItem}>
                 <LinkedinIcon />
-                <Text style={styles.profileItemText}>
-                  {profileState.linkedin}
-                </Text>
+                {profileState.linkedin.url ? (
+                  <Link
+                    style={styles.profileItemText}
+                    src={profileState.linkedin.url}
+                  >
+                    {profileState.linkedin.name}
+                  </Link>
+                ) : (
+                  <Text style={styles.profileItemText}>
+                    {profileState.linkedin.name}
+                  </Text>
+                )}
               </View>
             )}
-            {profileState.website && (
+            {profileState.website.name && (
               <View style={styles.profileItem}>
                 <LinkIcon />
-                <Text style={styles.profileItemText}>
-                  {profileState.website}
-                </Text>
+                {profileState.website.url ? (
+                  <Link
+                    style={styles.profileItemText}
+                    src={profileState.website.url}
+                  >
+                    {profileState.website.name}
+                  </Link>
+                ) : (
+                  <Text style={styles.profileItemText}>
+                    {profileState.website.name}
+                  </Text>
+                )}
               </View>
             )}
           </View>
@@ -215,7 +245,7 @@ function MyDocument({
           <Text style={styles.heading}>Skills</Text>
           <View style={{ width: "70%", fontSize: 12 }}>
             {skills.map((skill) => (
-              <>
+              <View key={skill.category}>
                 <Text style={{ marginBottom: 4, fontWeight: "bold" }}>
                   {skill.category}
                 </Text>
@@ -232,7 +262,7 @@ function MyDocument({
                     </Text>
                   ))}
                 </View>
-              </>
+              </View>
             ))}
           </View>
         </View>
@@ -248,9 +278,17 @@ function MyDocument({
           >
             {projectList.map((project) => (
               <View key={project.name} style={{ marginBottom: 8 }}>
-                <Text style={{ marginBottom: 4, fontWeight: "bold" }}>
+                <Link
+                  style={{
+                    marginBottom: 4,
+                    fontWeight: "bold",
+                    color: "#000",
+                    marginRight: "auto",
+                  }}
+                  src={project.url}
+                >
                   {project.name}
-                </Text>
+                </Link>
                 <Text style={{ color: "#444" }}>{project.description}</Text>
               </View>
             ))}
