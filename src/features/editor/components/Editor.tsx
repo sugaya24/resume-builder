@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { BiTrash } from "react-icons/bi";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 import { RiCloseCircleLine } from "react-icons/ri";
 
@@ -19,6 +20,7 @@ import {
 } from "../../../components/layouts/EditLayout";
 import Button from "../../../components/ui/Button";
 import Input from "../../../components/ui/Input";
+import Modal from "../../../components/ui/Modal";
 import { DateYMString } from "../types";
 
 type PersonalDetailProps = {
@@ -244,11 +246,11 @@ type SkillProps = {
 function Skill({ id, skills, setSkills }: SkillProps) {
   const [isEditing, setIsEditing] = useState(true);
   const [skill, setSkill] = useState("");
-  const parent = useRef(null);
+  const skillParent = useRef(null);
 
   useEffect(() => {
-    parent.current && autoAnimate(parent.current);
-  }, [parent]);
+    skillParent.current && autoAnimate(skillParent.current);
+  }, [skillParent]);
 
   const handleSubmit = (
     e:
@@ -269,18 +271,55 @@ function Skill({ id, skills, setSkills }: SkillProps) {
   };
 
   return (
-    <div className="mb-4 rounded-lg border bg-white p-4" ref={parent}>
+    <div className="mb-4 rounded-lg border bg-white p-4" ref={skillParent}>
       <div className="flex justify-between">
         <h2 className="text-2xl font-semibold">
           {skills[id].category || "(Category)"}
         </h2>
-        <div
-          className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
-          onClick={() => setIsEditing((prev) => !prev)}
-        >
-          <button className="flex h-8 w-8 items-center justify-center">
-            {isEditing ? <HiChevronUp width={"100%"} /> : <HiChevronDown />}
-          </button>
+        <div className="flex flex-row gap-2">
+          <div className="h-8 w-8">
+            <label
+              htmlFor={`${id}-skill-delete-modal`}
+              className="modal-button flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-slate-200"
+            >
+              <BiTrash />
+            </label>
+            <input
+              type="checkbox"
+              id={`${id}-skill-delete-modal`}
+              className="modal-toggle"
+            />
+            <Modal htmlFor={`${id}-skill-delete-modal`}>
+              <h3 className="text-2xl font-bold">Delete Entry</h3>
+              <p className="mb-4">Are you sure to delete this item?</p>
+              <div className="flex flex-row gap-4">
+                <label
+                  htmlFor={`${id}-skill-delete-modal`}
+                  className="btn modal-action btn-warning"
+                  onClick={() => {
+                    const updateList = skills.filter((_s, i) => id !== i);
+                    setSkills(updateList);
+                  }}
+                >
+                  Delete
+                </label>
+                <label
+                  htmlFor={`${id}-skill-delete-modal`}
+                  className="btn modal-action btn-outline"
+                >
+                  Cancel
+                </label>
+              </div>
+            </Modal>
+          </div>
+          <div
+            className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
+            onClick={() => setIsEditing((prev) => !prev)}
+          >
+            <button className="flex h-8 w-8 items-center justify-center">
+              {isEditing ? <HiChevronUp width={"100%"} /> : <HiChevronDown />}
+            </button>
+          </div>
         </div>
       </div>
       {isEditing && (
@@ -379,25 +418,33 @@ type SkillListProps = {
   setSkills: Dispatch<SetStateAction<TSkill[]>>;
 };
 function SkillList({ skills, setSkills }: SkillListProps) {
+  const skillListParent = useRef(null);
+
+  useEffect(() => {
+    skillListParent.current && autoAnimate(skillListParent.current);
+  }, [skillListParent]);
+
   return (
-    <div>
+    <div ref={skillListParent}>
       {skills.map((_skill, i) => (
         <Skill key={i} id={i} skills={skills} setSkills={setSkills} />
       ))}
-      <span
-        className="cursor-pointer text-sky-600"
-        onClick={() => {
-          setSkills([
-            ...skills,
-            {
-              name: [],
-              category: "",
-            },
-          ]);
-        }}
-      >
-        + Add Category
-      </span>
+      <div>
+        <span
+          className="cursor-pointer text-sky-600"
+          onClick={() => {
+            setSkills([
+              ...skills,
+              {
+                name: [],
+                category: "",
+              },
+            ]);
+          }}
+        >
+          + Add Category
+        </span>
+      </div>
     </div>
   );
 }
@@ -409,14 +456,14 @@ type ProjectProps = {
 };
 function Project({ id, projectList, setProjectList }: ProjectProps) {
   const [isEditing, setIsEditing] = useState(true);
-  const parent = useRef(null);
+  const projectParent = useRef(null);
 
   useEffect(() => {
-    parent.current && autoAnimate(parent.current);
-  }, [parent]);
+    projectParent.current && autoAnimate(projectParent.current);
+  }, [projectParent]);
 
   return (
-    <div className="mb-4 rounded-lg border bg-white p-4" ref={parent}>
+    <div className="mb-4 rounded-lg border bg-white p-4" ref={projectParent}>
       <div className="flex justify-between">
         <div className="flex flex-col">
           <h2 className="text-2xl font-semibold">
@@ -424,13 +471,50 @@ function Project({ id, projectList, setProjectList }: ProjectProps) {
           </h2>
           <div className="mt-2">{projectList[id].url}</div>
         </div>
-        <div
-          className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
-          onClick={() => setIsEditing((prev) => !prev)}
-        >
-          <button className="flex h-8 w-8 items-center justify-center">
-            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
-          </button>
+        <div className="flex flex-row gap-2">
+          <label
+            htmlFor={`${id}-project-delete-modal`}
+            className="modal-button flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-slate-200"
+          >
+            <BiTrash />
+          </label>
+          <input
+            type="checkbox"
+            id={`${id}-project-delete-modal`}
+            className="modal-toggle"
+          />
+          <Modal htmlFor={`${id}-project-delete-modal`}>
+            <h3 className="text-2xl font-bold">Delete Entry</h3>
+            <p className="mb-4">Are you sure to delete this item?</p>
+            <div className="flex flex-row gap-4">
+              <label
+                htmlFor={`${id}-project-delete-modal`}
+                className="btn modal-action btn-warning"
+                onClick={() => {
+                  const updateList = projectList.filter((_p, i) => id !== i);
+                  setProjectList(updateList);
+                }}
+              >
+                Delete
+              </label>
+              <label
+                htmlFor={`${id}-project-delete-modal`}
+                className="btn modal-action btn-outline"
+              >
+                Cancel
+              </label>
+            </div>
+          </Modal>
+          <div className="h-8 w-8">
+            <div
+              className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
+              onClick={() => setIsEditing((prev) => !prev)}
+            >
+              <button className="flex h-8 w-8 items-center justify-center">
+                {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       {isEditing && (
@@ -493,8 +577,14 @@ type ProjectListProps = {
   setProjectList: Dispatch<SetStateAction<TProject[]>>;
 };
 function ProjectList({ projectList, setProjectList }: ProjectListProps) {
+  const projectListParent = useRef(null);
+
+  useEffect(() => {
+    projectListParent.current && autoAnimate(projectListParent.current);
+  }, [projectListParent]);
+
   return (
-    <div>
+    <div ref={projectListParent}>
       {projectList.map((_project, i) => (
         <Project
           key={i}
@@ -503,21 +593,23 @@ function ProjectList({ projectList, setProjectList }: ProjectListProps) {
           setProjectList={setProjectList}
         />
       ))}
-      <span
-        className="cursor-pointer text-sky-600"
-        onClick={() => {
-          setProjectList([
-            ...projectList,
-            {
-              name: "",
-              url: "",
-              description: "",
-            },
-          ]);
-        }}
-      >
-        + Add Project
-      </span>
+      <div>
+        <span
+          className="cursor-pointer text-sky-600"
+          onClick={() => {
+            setProjectList([
+              ...projectList,
+              {
+                name: "",
+                url: "",
+                description: "",
+              },
+            ]);
+          }}
+        >
+          + Add Project
+        </span>
+      </div>
     </div>
   );
 }
@@ -532,14 +624,14 @@ function Work({
   setWorkList: Dispatch<SetStateAction<TWorkHistory[]>>;
 }) {
   const [isEditing, setIsEditing] = useState(false);
-  const parent = useRef(null);
+  const workParent = useRef(null);
 
   useEffect(() => {
-    parent.current && autoAnimate(parent.current);
-  }, [parent]);
+    workParent.current && autoAnimate(workParent.current);
+  }, [workParent]);
 
   return (
-    <div className="mb-4 rounded-lg border bg-white p-4" ref={parent}>
+    <div className="mb-4 rounded-lg border bg-white p-4" ref={workParent}>
       <div className="flex justify-between">
         <div>
           <h2 className="text-2xl font-semibold">
@@ -560,13 +652,48 @@ function Work({
           )}
         </div>
 
-        <div
-          className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
-          onClick={() => setIsEditing((prev) => !prev)}
-        >
-          <button className="flex h-8 w-8 items-center justify-center">
-            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
-          </button>
+        <div className="flex flex-row gap-2">
+          <label
+            htmlFor={`${id}-work-delete-modal`}
+            className="modal-button flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-slate-200"
+          >
+            <BiTrash />
+          </label>
+          <input
+            type="checkbox"
+            id={`${id}-work-delete-modal`}
+            className="modal-toggle"
+          />
+          <Modal htmlFor={`${id}-work-delete-modal`}>
+            <h3 className="text-2xl font-bold">Delete Entry</h3>
+            <p className="mb-4">Are you sure to delete this item?</p>
+            <div className="flex flex-row gap-4">
+              <label
+                htmlFor={`${id}-work-delete-modal`}
+                className="btn modal-action btn-warning"
+                onClick={() => {
+                  const updateList = workList.filter((_w, i) => id !== i);
+                  setWorkList(updateList);
+                }}
+              >
+                Delete
+              </label>
+              <label
+                htmlFor={`${id}-work-delete-modal`}
+                className="btn modal-action btn-outline"
+              >
+                Cancel
+              </label>
+            </div>
+          </Modal>
+          <div
+            className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
+            onClick={() => setIsEditing((prev) => !prev)}
+          >
+            <button className="flex h-8 w-8 items-center justify-center">
+              {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+            </button>
+          </div>
         </div>
       </div>
       {isEditing && (
@@ -691,29 +818,37 @@ function WorkHistory({
   workList: TWorkHistory[];
   setWorkList: Dispatch<SetStateAction<TWorkHistory[]>>;
 }) {
+  const workHistoryParent = useRef(null);
+
+  useEffect(() => {
+    workHistoryParent.current && autoAnimate(workHistoryParent.current);
+  }, [workHistoryParent]);
+
   return (
-    <div>
+    <div ref={workHistoryParent}>
       {workList.map((_work, id) => (
         <Work key={id} id={id} workList={workList} setWorkList={setWorkList} />
       ))}
-      <span
-        className="cursor-pointer text-sky-600"
-        onClick={() =>
-          setWorkList((works) => [
-            ...works,
-            {
-              jobTitle: "",
-              employer: "",
-              city: "",
-              startDate: null,
-              endDate: null,
-              description: "",
-            },
-          ])
-        }
-      >
-        + Add Work History
-      </span>
+      <div>
+        <span
+          className="cursor-pointer text-sky-600"
+          onClick={() =>
+            setWorkList((works) => [
+              ...works,
+              {
+                jobTitle: "",
+                employer: "",
+                city: "",
+                startDate: null,
+                endDate: null,
+                description: "",
+              },
+            ])
+          }
+        >
+          + Add Work History
+        </span>
+      </div>
     </div>
   );
 }
@@ -725,11 +860,11 @@ type EducationProps = {
 };
 function Education({ id, educationList, setEducationList }: EducationProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const parent = useRef(null);
+  const educationParent = useRef(null);
 
   useEffect(() => {
-    parent.current && autoAnimate(parent.current);
-  }, [parent]);
+    educationParent.current && autoAnimate(educationParent.current);
+  }, [educationParent]);
 
   const handleOnChange =
     (key: keyof TEducation) =>
@@ -745,7 +880,7 @@ function Education({ id, educationList, setEducationList }: EducationProps) {
     };
 
   return (
-    <div className="mb-4 rounded-lg border bg-white p-4" ref={parent}>
+    <div className="mb-4 rounded-lg border bg-white p-4" ref={educationParent}>
       <div className="flex justify-between">
         <div>
           <h2 className="text-2xl font-semibold">
@@ -764,13 +899,48 @@ function Education({ id, educationList, setEducationList }: EducationProps) {
             </span>
           )}
         </div>
-        <div
-          className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
-          onClick={() => setIsEditing((prev) => !prev)}
-        >
-          <button className="flex h-8 w-8 items-center justify-center">
-            {isEditing ? <HiChevronUp /> : <HiChevronDown />}
-          </button>
+        <div className="flex flex-row gap-2">
+          <label
+            htmlFor={`${id}-education-delete-modal`}
+            className="modal-button flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-slate-200"
+          >
+            <BiTrash />
+          </label>
+          <input
+            type="checkbox"
+            id={`${id}-education-delete-modal`}
+            className="modal-toggle"
+          />
+          <Modal htmlFor={`${id}-education-delete-modal`}>
+            <h3 className="text-2xl font-bold">Delete Entry</h3>
+            <p className="mb-4">Are you sure to delete this item?</p>
+            <div className="flex flex-row gap-4">
+              <label
+                htmlFor={`${id}-education-delete-modal`}
+                className="btn modal-action btn-warning"
+                onClick={() => {
+                  const updateList = educationList.filter((_e, i) => id !== i);
+                  setEducationList(updateList);
+                }}
+              >
+                Delete
+              </label>
+              <label
+                htmlFor={`${id}-education-delete-modal`}
+                className="btn modal-action btn-outline"
+              >
+                Cancel
+              </label>
+            </div>
+          </Modal>
+          <div
+            className="h-8 w-8 cursor-pointer rounded-lg border duration-100 hover:bg-slate-200"
+            onClick={() => setIsEditing((prev) => !prev)}
+          >
+            <button className="flex h-8 w-8 items-center justify-center">
+              {isEditing ? <HiChevronUp /> : <HiChevronDown />}
+            </button>
+          </div>
         </div>
       </div>
       {isEditing && (
@@ -865,8 +1035,14 @@ function EducationList({
   educationList: TEducation[];
   setEducationList: React.Dispatch<React.SetStateAction<TEducation[]>>;
 }) {
+  const educationListParent = useRef(null);
+
+  useEffect(() => {
+    educationListParent.current && autoAnimate(educationListParent.current);
+  }, [educationListParent]);
+
   return (
-    <div>
+    <div ref={educationListParent}>
       {educationList.map((_education, id) => (
         <Education
           key={id}
@@ -875,24 +1051,26 @@ function EducationList({
           setEducationList={setEducationList}
         />
       ))}
-      <span
-        className="cursor-pointer text-sky-600"
-        onClick={() =>
-          setEducationList((educationList) => [
-            ...educationList,
-            {
-              school: "",
-              degree: "",
-              startDate: null,
-              endDate: null,
-              city: "",
-              description: "",
-            },
-          ])
-        }
-      >
-        + Add Education
-      </span>
+      <div>
+        <span
+          className="cursor-pointer text-sky-600"
+          onClick={() =>
+            setEducationList((educationList) => [
+              ...educationList,
+              {
+                school: "",
+                degree: "",
+                startDate: null,
+                endDate: null,
+                city: "",
+                description: "",
+              },
+            ])
+          }
+        >
+          + Add Education
+        </span>
+      </div>
     </div>
   );
 }
