@@ -76,14 +76,26 @@ export default function EditPage() {
   const [projectList, setProjectList] = useState<TProject[]>([]);
   const [workList, setWorkList] = useState<TWorkHistory[]>([]);
   const [educationList, setEducationList] = useState<TEducation[]>([]);
+  const [previewVisible, setPreviewVisible] = useState(false);
+
+  const handlePreviewVisible = () => {
+    setPreviewVisible(!previewVisible);
+  };
 
   return (
     <>
       <div className="h-screen w-full">
+        <label
+          htmlFor="preview visible button"
+          className="btn btn-circle visible absolute right-8 bottom-8 z-10 md:invisible"
+          onClick={handlePreviewVisible}
+        >
+          {previewVisible ? "📝" : "👀"}
+        </label>
         <div className="flex h-full flex-col">
           <div className="grow overflow-hidden">
             <div className="flex h-full">
-              <div className="h-full w-1/2">
+              <div className="h-full w-full md:w-1/2">
                 <Editor
                   profileState={profileState}
                   setProfileState={setProfileState}
@@ -97,7 +109,11 @@ export default function EditPage() {
                   setEducationList={setEducationList}
                 />
               </div>
-              <div className="w-1/2">
+              <div
+                className={`${
+                  previewVisible ? "visible" : "invisible"
+                } absolute h-full w-full md:visible md:relative md:w-1/2`}
+              >
                 <Preview
                   profileState={profileState}
                   skills={skills}

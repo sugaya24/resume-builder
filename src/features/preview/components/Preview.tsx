@@ -396,8 +396,8 @@ function Preview({
   }, []);
 
   return (
-    <div id="preview" className="h-full bg-slate-600">
-      <div className="mx-auto flex h-full w-3/4 flex-col p-4">
+    <div id="preview" className="h-full w-full bg-slate-600">
+      <div className="mx-auto flex h-full w-full flex-col p-4 md:w-3/4">
         <div className="h-full w-full grow bg-white shadow">
           {isClient && (
             <PDFViewer width={"100%"} height={"100%"} showToolbar={true}>
