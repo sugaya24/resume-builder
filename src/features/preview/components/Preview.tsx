@@ -31,7 +31,7 @@ Font.register({
   fonts: [
     { src: "./Roboto-Regular.ttf" },
     { src: "./Roboto-Italic.ttf", fontStyle: "italic" },
-    { src: "./Roboto-bold.ttf", fontWeight: "bold" },
+    { src: "./Roboto-Bold.ttf", fontWeight: "bold" },
   ],
 });
 
